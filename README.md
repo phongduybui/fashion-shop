@@ -1,7 +1,8 @@
 # Cybershop
-E-commerce website
 
-## Installation 
+E-commerce website v1.0
+
+## Installation
 
 ```bash
 git clone https://github.com/phongduybui/cybershop-ecommerce.git
@@ -9,11 +10,13 @@ git clone https://github.com/phongduybui/cybershop-ecommerce.git
 
 Install dependencies with npm
 
-```bash 
+```bash
   cd cybershop-ecommerce
   npm install
 ```
+
 ## Technologies:
-- **Frontend**: Reactjs  
-- **Backend**: Nodejs (Express)  
-- **Database**: MongoDB, mongoose  
+
+- **Frontend**: Reactjs
+- **Backend**: Nodejs (Express)
+- **Database**: MongoDB, mongoose
