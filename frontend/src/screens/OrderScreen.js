@@ -87,7 +87,11 @@ const OrderScreen = ({ match, history }) => {
     <Message variant='danger'>{error}</Message>
   ) : (
     <>
-      <h1>Order {order._id}</h1>
+      <Row>
+        <h1 style={{ color: '#0d6efd', padding: '28px', fontSize: 26 }}>
+          Order {order._id}
+        </h1>
+      </Row>
       <Row>
         <Col md={8}>
           <ListGroup variant='flush'>
@@ -135,7 +139,7 @@ const OrderScreen = ({ match, history }) => {
               ) : (
                 <ListGroup variant='flush'>
                   {order.orderItems.map((item, index) => (
-                    <ListGroup.Item key={index}>
+                    <ListGroup.Item key={index} className='py-3'>
                       <Row>
                         <Col md={1}>
                           <Image

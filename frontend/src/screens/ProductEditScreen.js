@@ -139,6 +139,7 @@ const ProductEditScreen = ({ match, history }) => {
                 label='Choose File'
                 custom
                 onChange={uploadFileHandler}
+                className='py-3'
               ></Form.File>
               {uploading && <Loader />}
             </Form.Group>
@@ -183,7 +184,7 @@ const ProductEditScreen = ({ match, history }) => {
               ></Form.Control>
             </Form.Group>
 
-            <Button type='submit' variant='primary'>
+            <Button type='submit' variant='primary' className='my-3'>
               Update
             </Button>
           </Form>

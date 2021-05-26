@@ -62,7 +62,7 @@ const UserEditScreen = ({ match, history }) => {
           <Message variant='danger'>{error}</Message>
         ) : (
           <Form onSubmit={submitHandler}>
-            <Form.Group controlId='name'>
+            <Form.Group controlId='name' className='my-3'>
               <Form.Label>Name</Form.Label>
               <Form.Control
                 type='name'
@@ -72,7 +72,7 @@ const UserEditScreen = ({ match, history }) => {
               ></Form.Control>
             </Form.Group>
 
-            <Form.Group controlId='email'>
+            <Form.Group controlId='email' className='my-3'>
               <Form.Label>Email Address</Form.Label>
               <Form.Control
                 type='email'
@@ -82,7 +82,7 @@ const UserEditScreen = ({ match, history }) => {
               ></Form.Control>
             </Form.Group>
 
-            <Form.Group controlId='isadmin'>
+            <Form.Group controlId='isadmin' className='my-3'>
               <Form.Check
                 type='checkbox'
                 label='Is Admin'
@@ -91,7 +91,7 @@ const UserEditScreen = ({ match, history }) => {
               ></Form.Check>
             </Form.Group>
 
-            <Button type='submit' variant='primary'>
+            <Button type='submit' variant='primary' className='my-2'>
               Update
             </Button>
           </Form>
