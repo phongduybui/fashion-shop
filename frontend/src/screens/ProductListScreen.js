@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
+import queryString from 'query-string';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Table, Button, Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
-// import Paginate from '../components/Paginate';
+import Paginate from '../components/Paginate';
 import {
   listProducts,
   deleteProduct,
@@ -12,8 +13,8 @@ import {
 } from '../actions/productActions';
 import { PRODUCT_CREATE_RESET } from '../constants/productConstants';
 
-const ProductListScreen = ({ history, match }) => {
-  const pageNumber = match.params.pageNumber || 1;
+const ProductListScreen = ({ history, location }) => {
+  const { pageNumber = 1 } = queryString.parse(location.search);
 
   const dispatch = useDispatch();
 
@@ -72,11 +73,11 @@ const ProductListScreen = ({ history, match }) => {
 
   return (
     <>
-      <Row className='align-items-center'>
+      <Row className='align-items-center justify-content-between'>
         <Col>
           <h1>Products</h1>
         </Col>
-        <Col className='text-right'>
+        <Col className='text-end'>
           <Button className='my-3' onClick={createProductHandler}>
             <i className='fas fa-plus'></i> Create Product
           </Button>
@@ -113,13 +114,13 @@ const ProductListScreen = ({ history, match }) => {
                   <td>{product.brand}</td>
                   <td>
                     <LinkContainer to={`/admin/product/${product._id}/edit`}>
-                      <Button variant='light' className='btn-sm'>
+                      <Button variant='light' className='btn-sm my-1'>
                         <i className='fas fa-edit'></i>
                       </Button>
                     </LinkContainer>
                     <Button
                       variant='danger'
-                      className='btn-sm'
+                      className='btn-sm my-1'
                       onClick={() => deleteHandler(product._id)}
                     >
                       <i className='fas fa-trash'></i>
@@ -129,7 +130,7 @@ const ProductListScreen = ({ history, match }) => {
               ))}
             </tbody>
           </Table>
-          {/* <Paginate pages={pages} page={page} isAdmin={true} /> */}
+          <Paginate pages={pages} page={page} isAdmin={true} />
         </>
       )}
     </>
