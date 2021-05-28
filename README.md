@@ -4,10 +4,10 @@ E-commerce website
 
 ## Demo
 
-Version 1.0 (Simple UI) :point_right: :point_right: :
+:point_right: :point_right: Version 1.0 (Simple UI) :
 https://cybershop-v1.herokuapp.com/
 
-Version 2.0 (Improved UI, UX, and more functions):
+:point_right: :point_right: Version 2.0 (Improved UI, UX, and more functions):
 _Comming soon_ :raised_hands: :raised_hands:
 
 ## Installation
