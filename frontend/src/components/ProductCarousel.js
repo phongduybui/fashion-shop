@@ -1,47 +1,56 @@
-import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Carousel, Image } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
-import Loader from './Loader';
-import Message from './Message';
-import { listTopProducts } from '../actions/productActions';
+import React from 'react';
+import 'react-responsive-carousel/lib/styles/carousel.min.css'; // requires a loader
+import { Carousel } from 'react-responsive-carousel';
 
 const ProductCarousel = () => {
-  const dispatch = useDispatch();
+  const styles = {
+    height: '100vh',
+    width: '100%',
+    marginBottom: 80,
+  };
 
-  const productTopRated = useSelector((state) => state.productTopRated);
-  const { loading, error, products } = productTopRated;
+  const imgStyles = {
+    maxHeight: '100vh',
+    width: '100%',
+    objectFit: 'cover !important',
+  };
+  return (
+    <div>
+      <Carousel
+        centerMode
+        autoPlay
+        infiniteLoop
+        showThumbs={false}
+        showIndicators={false}
+        showStatus={false}
+        showArrows={true}
+        style={styles}
+      >
+        <div>
+          <img
+            src='https://goyacdn.everthemes.com/demo-fashion/wp-content/uploads/sites/3/2020/02/monigote.jpg'
+            alt='a'
+            style={imgStyles}
+          />
+        </div>
 
-  useEffect(() => {
-    dispatch(listTopProducts());
-  }, [dispatch]);
+        <div>
+          <img
+            src='https://goyacdn.everthemes.com/demo-fashion/wp-content/uploads/sites/3/2020/02/curly_hair_white-1.jpg'
+            alt='a'
+            style={imgStyles}
+          />
+        </div>
 
-  return loading ? (
-    <Loader />
-  ) : error ? (
-    <Message variant='danger'>{error}</Message>
-  ) : (
-    <Carousel pause='hover' className='bg-dark'>
-      {products.map((product) => (
-        <Carousel.Item key={product._id}>
-          <Link to={`/product/${product._id}`}>
-            <Image src={product.image} alt={product.name} fluid />
-            <Carousel.Caption className='carousel-caption'>
-              <h2
-                style={{
-                  whiteSpace: 'nowrap',
-                  textAlign: 'center',
-                  textOverflow: 'ellipsis',
-                  overflow: 'hidden',
-                }}
-              >
-                {product.name} (${product.price})
-              </h2>
-            </Carousel.Caption>
-          </Link>
-        </Carousel.Item>
-      ))}
-    </Carousel>
+        <div>
+          <img
+            src='https://goyacdn.everthemes.com/demo-fashion/wp-content/uploads/sites/3/2020/02/curly_hair_girl-1.jpg'
+            alt='a'
+            style={imgStyles}
+          />
+        </div>
+      </Carousel>
+    </div>
   );
 };
 
