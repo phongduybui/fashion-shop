@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
-import { Container } from 'react-bootstrap';
 import Footer from './components/Footer';
 import Header from './components/Header';
 import HomeScreen from './screens/HomeScreen';
@@ -23,25 +22,23 @@ const App = () => {
   return (
     <Router>
       <Header />
-      <main className='py-3'>
-        <Container>
-          <Route path='/admin/orderlist' component={OrderListScreen} />
-          <Route path='/admin/product/:id' component={ProductEditScreen} />
-          <Route path='/admin/productlist' component={ProductListScreen} />
-          <Route path='/admin/user/:id' component={UserEditScreen} />
-          <Route path='/admin/userlist' component={UserListScreen} />
-          <Route path='/product/:id' component={ProductScreen} />
-          <Route path='/cart/:id?' component={CartScreen} />
-          <Route path='/login' component={LoginScreen} />
-          <Route path='/register' component={RegisterScreen} />
-          <Route path='/profile' component={ProfileScreen} />
-          <Route path='/shipping' component={ShippingScreen} />
-          <Route path='/payment' component={PaymentScreen} />
-          <Route path='/placeorder' component={PlaceOrderScreen} />
-          <Route path='/order/:id' component={OrderScreen} />
-          <Route path='/search' component={HomeScreen} exact />
-          <Route path='/' component={HomeScreen} exact />
-        </Container>
+      <main>
+        <Route path='/admin/orderlist' component={OrderListScreen} />
+        <Route path='/admin/product/:id' component={ProductEditScreen} />
+        <Route path='/admin/productlist' component={ProductListScreen} />
+        <Route path='/admin/user/:id' component={UserEditScreen} />
+        <Route path='/admin/userlist' component={UserListScreen} />
+        <Route path='/product/:id' component={ProductScreen} />
+        <Route path='/cart/:id?' component={CartScreen} />
+        <Route path='/login' component={LoginScreen} />
+        <Route path='/register' component={RegisterScreen} />
+        <Route path='/profile' component={ProfileScreen} />
+        <Route path='/shipping' component={ShippingScreen} />
+        <Route path='/payment' component={PaymentScreen} />
+        <Route path='/placeorder' component={PlaceOrderScreen} />
+        <Route path='/order/:id' component={OrderScreen} />
+        <Route path='/search' component={HomeScreen} exact />
+        <Route path='/' component={HomeScreen} exact />
       </main>
       <Footer />
     </Router>
