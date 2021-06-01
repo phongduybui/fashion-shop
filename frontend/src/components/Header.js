@@ -1,68 +1,215 @@
-import React from 'react';
-import { Route } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { LinkContainer } from 'react-router-bootstrap';
-import { logout } from '../actions/userActions';
-import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap';
-import SearchBox from './SearchBox';
+import React, { useState } from 'react';
+import logo from '../assets/images/logo_ver2.png';
+import { ReactComponent as UserIcon } from '../assets/icons/user.svg';
+import { ReactComponent as SearchIcon } from '../assets/icons/search.svg';
+import { ReactComponent as CartIcon } from '../assets/icons/cart.svg';
+import { ReactComponent as WishlistIcon } from '../assets/icons/wishlist.svg';
+import { Link } from 'react-router-dom';
+import { makeStyles } from '@material-ui/core/styles';
+import useScrollTrigger from '@material-ui/core/useScrollTrigger';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import IconButton from '@material-ui/core/IconButton';
+import Badge from '@material-ui/core/Badge';
+import MenuItem from '@material-ui/core/MenuItem';
+import MenuIcon from '@material-ui/icons/Menu';
+import CloseIcon from '@material-ui/icons/Close';
+import MenuList from '@material-ui/core/MenuList';
+import { Drawer, Hidden, Modal } from '@material-ui/core';
+
+const useStyles = makeStyles((theme) => ({
+  header: {
+    backgroundColor: '#fff',
+    color: '#444',
+    transition: 'all .2s',
+    boxShadow: '0px 2px 8px -1px rgb(0 0 0 / 10%)',
+    [theme.breakpoints.up('md')]: {
+      backgroundColor: 'transparent',
+      boxShadow: 'none',
+    },
+  },
+  header2: {
+    backgroundColor: '#fff',
+    color: '#444',
+    transition: 'all .2s',
+    boxShadow: '0px 2px 8px -1px rgb(0 0 0 / 10%)',
+  },
+  grow: {
+    flexGrow: 1,
+  },
+  menuButton: {
+    display: 'none',
+    marginRight: theme.spacing(2),
+    '@media(max-width: 740px)': {
+      display: 'block',
+    },
+  },
+  logoWrapper: {
+    flexBasis: '20%',
+    maxWidth: '20%',
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logo: {
+    flexGrow: 1,
+    maxWidth: 120,
+  },
+  navMenu: {
+    flexBasis: '40%',
+    maxWidth: '40%',
+    padding: 0,
+  },
+  drawer: {
+    width: 250,
+  },
+  navList: {
+    display: 'flex',
+    '@media(max-width: 740px)': {
+      display: 'none',
+    },
+  },
+  navListMobile: {
+    position: 'fixed',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    width: '250px',
+    backgroundColor: 'white',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
+    // transform: (props) =>
+    //   props.mobile ? 'translateX(0)' : 'translateX(-100%)',
+    // transition: 'all .3s',
+  },
+  sectionDesktop: {
+    // display: 'none',
+    marginLeft: 'auto',
+    // [theme.breakpoints.up('md')]: {
+    //   display: 'flex',
+    // },
+  },
+  closeButton: {
+    position: 'fixed',
+    top: 10,
+    left: 20,
+  },
+  // sectionMobile: {
+  //   display: 'flex',
+  //   [theme.breakpoints.up('md')]: {
+  //     display: 'none',
+  //   },
+  // },
+}));
 
 const Header = () => {
-  const dispatch = useDispatch();
-  const { userInfo } = useSelector((state) => state.userLogin);
+  const [mobile, setMobile] = useState(false);
 
-  const logoutHandler = () => {
-    dispatch(logout());
-  };
+  const classes = useStyles({ mobile });
+  const trigger = useScrollTrigger({
+    disableHysteresis: true,
+    target: window ? window : undefined,
+    threshold: 80,
+  });
+
   return (
-    <header>
-      <Navbar bg='dark' variant='dark' expand='lg' collapseOnSelect>
-        <Container>
-          <LinkContainer to='/'>
-            <Navbar.Brand>CyberShop</Navbar.Brand>
-          </LinkContainer>
-          <Navbar.Toggle aria-controls='basic-navbar-nav' />
-          <Navbar.Collapse id='basic-navbar-nav'>
-            <Route render={({ history }) => <SearchBox history={history} />} />
-            <Nav className='ms-auto'>
-              <LinkContainer to='/cart'>
-                <Nav.Link>
-                  <i className='fas fa-shopping-cart'></i> Cart
-                </Nav.Link>
-              </LinkContainer>
-              {userInfo ? (
-                <NavDropdown title={userInfo.name} id='username'>
-                  <LinkContainer to='/profile'>
-                    <NavDropdown.Item>Profile</NavDropdown.Item>
-                  </LinkContainer>
-                  <NavDropdown.Item onClick={logoutHandler}>
-                    Logout
-                  </NavDropdown.Item>
-                </NavDropdown>
-              ) : (
-                <LinkContainer to='/login'>
-                  <Nav.Link>
-                    <i className='fas fa-user'></i> Sign In
-                  </Nav.Link>
-                </LinkContainer>
-              )}
-              {userInfo && userInfo.isAdmin && (
-                <NavDropdown title='Admin' id='adminmenu'>
-                  <LinkContainer to='/admin/userlist'>
-                    <NavDropdown.Item>Users</NavDropdown.Item>
-                  </LinkContainer>
-                  <LinkContainer to='/admin/productlist'>
-                    <NavDropdown.Item>Products</NavDropdown.Item>
-                  </LinkContainer>
-                  <LinkContainer to='/admin/orderlist'>
-                    <NavDropdown.Item>Orders</NavDropdown.Item>
-                  </LinkContainer>
-                </NavDropdown>
-              )}
-            </Nav>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
-    </header>
+    <div className={classes.grow}>
+      <AppBar
+        position='fixed'
+        className={!trigger ? classes.header : classes.header2}
+      >
+        <Toolbar>
+          <Toolbar className={classes.navMenu}>
+            <IconButton
+              edge='start'
+              className={classes.menuButton}
+              onClick={() => setMobile(!mobile)}
+              color='inherit'
+              aria-label='open drawer'
+            >
+              <MenuIcon />
+            </IconButton>
+            <MenuList className={classes.navList} role='presentation'>
+              <MenuItem component={Link} to='/' className='navItem'>
+                Home
+              </MenuItem>
+              <MenuItem component={Link} to='/' className='navItem'>
+                Shop
+              </MenuItem>
+              <MenuItem component={Link} to='/' className='navItem'>
+                About Us
+              </MenuItem>
+            </MenuList>
+            <Drawer
+              variant='temporary'
+              anchor='left'
+              className={classes.drawer}
+              ModalProps={{
+                keepMounted: true, // Better open performance on mobile
+                disablePortal: true,
+              }}
+              open={mobile}
+              onClose={() => setMobile(false)}
+            >
+              <MenuList className={classes.navListMobile} role='presentation'>
+                <MenuItem component={Link} to='/' className='navItem'>
+                  Home
+                </MenuItem>
+                <MenuItem component={Link} to='/' className='navItem'>
+                  Shop
+                </MenuItem>
+                <MenuItem component={Link} to='/' className='navItem'>
+                  About Us
+                </MenuItem>
+              </MenuList>
+              <IconButton
+                edge='start'
+                className={classes.closeButton}
+                onClick={() => setMobile(false)}
+                color='inherit'
+                aria-label='close drawer'
+              >
+                <CloseIcon />
+              </IconButton>
+            </Drawer>
+          </Toolbar>
+          <Toolbar className={classes.logoWrapper}>
+            <img src={logo} alt='logo' className={classes.logo} />
+          </Toolbar>
+          <div className={classes.sectionDesktop}>
+            <IconButton color='inherit'>
+              <SearchIcon height={22} width={22} />
+            </IconButton>
+            <Hidden smDown>
+              <IconButton color='inherit'>
+                <Badge badgeContent={4} color='secondary'>
+                  <WishlistIcon />
+                </Badge>
+              </IconButton>
+            </Hidden>
+            <IconButton color='inherit'>
+              <Badge badgeContent={4} color='secondary'>
+                <CartIcon />
+              </Badge>
+            </IconButton>
+            <Hidden smDown>
+              <IconButton
+                edge='end'
+                aria-label='account of current user'
+                aria-haspopup='true'
+                // onClick={handleProfileMenuOpen}
+                color='inherit'
+              >
+                <UserIcon height={22} />
+              </IconButton>
+            </Hidden>
+          </div>
+        </Toolbar>
+      </AppBar>
+    </div>
   );
 };
 
