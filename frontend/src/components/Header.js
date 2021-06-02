@@ -15,9 +15,15 @@ import MenuItem from '@material-ui/core/MenuItem';
 import MenuIcon from '@material-ui/icons/Menu';
 import CloseIcon from '@material-ui/icons/Close';
 import MenuList from '@material-ui/core/MenuList';
-import { Drawer, Hidden, Modal } from '@material-ui/core';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { Drawer, Hidden } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
+  sectionDesktop: {
+    flexBasis: '40%',
+    maxWidth: '40%',
+    ...theme.mixins.customize.flexMixin('flex-end', 'center'),
+  },
   header: {
     backgroundColor: '#fff',
     color: '#444',
@@ -66,47 +72,31 @@ const useStyles = makeStyles((theme) => ({
   },
   navList: {
     display: 'flex',
-    '@media(max-width: 740px)': {
-      display: 'none',
-    },
   },
   navListMobile: {
-    position: 'fixed',
-    top: 0,
-    bottom: 0,
-    left: 0,
     width: '250px',
+    marginTop: 50,
     backgroundColor: 'white',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'space-evenly',
-    // transform: (props) =>
-    //   props.mobile ? 'translateX(0)' : 'translateX(-100%)',
-    // transition: 'all .3s',
+    '& .navItem': {
+      width: '100%',
+      justifyContent: 'center',
+    },
   },
-  sectionDesktop: {
-    // display: 'none',
-    marginLeft: 'auto',
-    // [theme.breakpoints.up('md')]: {
-    //   display: 'flex',
-    // },
-  },
+
   closeButton: {
     position: 'fixed',
     top: 10,
     left: 20,
   },
-  // sectionMobile: {
-  //   display: 'flex',
-  //   [theme.breakpoints.up('md')]: {
-  //     display: 'none',
-  //   },
-  // },
 }));
 
 const Header = () => {
   const [mobile, setMobile] = useState(false);
+  const onMobile = useMediaQuery('(max-width:740px)');
 
   const classes = useStyles({ mobile });
   const trigger = useScrollTrigger({
@@ -132,29 +122,8 @@ const Header = () => {
             >
               <MenuIcon />
             </IconButton>
-            <MenuList className={classes.navList} role='presentation'>
-              <MenuItem component={Link} to='/' className='navItem'>
-                Home
-              </MenuItem>
-              <MenuItem component={Link} to='/' className='navItem'>
-                Shop
-              </MenuItem>
-              <MenuItem component={Link} to='/' className='navItem'>
-                About Us
-              </MenuItem>
-            </MenuList>
-            <Drawer
-              variant='temporary'
-              anchor='left'
-              className={classes.drawer}
-              ModalProps={{
-                keepMounted: true, // Better open performance on mobile
-                disablePortal: true,
-              }}
-              open={mobile}
-              onClose={() => setMobile(false)}
-            >
-              <MenuList className={classes.navListMobile} role='presentation'>
+            {!onMobile ? (
+              <MenuList className={classes.navList} role='presentation'>
                 <MenuItem component={Link} to='/' className='navItem'>
                   Home
                 </MenuItem>
@@ -165,24 +134,50 @@ const Header = () => {
                   About Us
                 </MenuItem>
               </MenuList>
-              <IconButton
-                edge='start'
-                className={classes.closeButton}
-                onClick={() => setMobile(false)}
-                color='inherit'
-                aria-label='close drawer'
+            ) : (
+              <Drawer
+                variant='temporary'
+                anchor='left'
+                className={classes.drawer}
+                open={mobile}
+                onClose={() => setMobile(false)}
+                ModalProps={{
+                  keepMounted: true, // Better open performance on mobile
+                  disablePortal: true,
+                }}
               >
-                <CloseIcon />
-              </IconButton>
-            </Drawer>
+                <MenuList className={classes.navListMobile} role='presentation'>
+                  <MenuItem component={Link} to='/' className='navItem'>
+                    Home
+                  </MenuItem>
+                  <MenuItem component={Link} to='/' className='navItem'>
+                    Shop
+                  </MenuItem>
+                  <MenuItem component={Link} to='/' className='navItem'>
+                    About Us
+                  </MenuItem>
+                </MenuList>
+                <IconButton
+                  edge='start'
+                  className={classes.closeButton}
+                  onClick={() => setMobile(false)}
+                  color='inherit'
+                  aria-label='close drawer'
+                >
+                  <CloseIcon />
+                </IconButton>
+              </Drawer>
+            )}
           </Toolbar>
           <Toolbar className={classes.logoWrapper}>
             <img src={logo} alt='logo' className={classes.logo} />
           </Toolbar>
           <div className={classes.sectionDesktop}>
-            <IconButton color='inherit'>
-              <SearchIcon height={22} width={22} />
-            </IconButton>
+            <Hidden smDown>
+              <IconButton color='inherit'>
+                <SearchIcon height={22} width={22} />
+              </IconButton>
+            </Hidden>
             <Hidden smDown>
               <IconButton color='inherit'>
                 <Badge badgeContent={4} color='secondary'>
