@@ -1,6 +1,12 @@
 html {
   font-family: 'Jost', sans-serif;
 }
+
+body {
+  overflow-y: scroll !important;
+  padding-right: 0 !important;
+}
+
 #root {
   overflow: hidden;
 }
