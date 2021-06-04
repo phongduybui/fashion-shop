@@ -18,6 +18,16 @@ const theme = createMuiTheme({
       textOverflowEllipse,
     },
   },
+  breakpoints: {
+    keys: ['xs', 'sm', 'md', 'lg', 'xl'],
+    values: {
+      xs: 0,
+      sm: 600,
+      md: 740,
+      lg: 960,
+      xl: 1280,
+    },
+  },
 });
 
 export default theme;
