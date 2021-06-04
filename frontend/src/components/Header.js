@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import clsx from 'clsx';
 import logo from '../assets/images/logo_ver2.png';
 import { ReactComponent as UserIcon } from '../assets/icons/user.svg';
 import { ReactComponent as SearchIcon } from '../assets/icons/search.svg';
@@ -19,16 +20,12 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { Drawer, Hidden } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
-  sectionDesktop: {
-    flexBasis: '40%',
-    maxWidth: '40%',
-    ...theme.mixins.customize.flexMixin('flex-end', 'center'),
-  },
   header: {
     backgroundColor: '#fff',
     color: '#444',
     transition: 'all .2s',
     boxShadow: '0px 2px 8px -1px rgb(0 0 0 / 10%)',
+    paddingRight: '0 !important',
     [theme.breakpoints.up('md')]: {
       backgroundColor: 'transparent',
       boxShadow: 'none',
@@ -39,9 +36,7 @@ const useStyles = makeStyles((theme) => ({
     color: '#444',
     transition: 'all .2s',
     boxShadow: '0px 2px 8px -1px rgb(0 0 0 / 10%)',
-  },
-  grow: {
-    flexGrow: 1,
+    paddingRight: '0 !important',
   },
   menuButton: {
     display: 'none',
@@ -86,7 +81,11 @@ const useStyles = makeStyles((theme) => ({
       justifyContent: 'center',
     },
   },
-
+  sectionDesktop: {
+    flexBasis: '40%',
+    maxWidth: '40%',
+    ...theme.mixins.customize.flexMixin('flex-end', 'center'),
+  },
   closeButton: {
     position: 'fixed',
     top: 10,
@@ -106,25 +105,57 @@ const Header = () => {
   });
 
   return (
-    <div className={classes.grow}>
-      <AppBar
-        position='fixed'
-        className={!trigger ? classes.header : classes.header2}
-      >
-        <Toolbar>
-          <Toolbar className={classes.navMenu}>
-            <IconButton
-              edge='start'
-              className={classes.menuButton}
-              onClick={() => setMobile(!mobile)}
-              color='inherit'
-              aria-label='open drawer'
+    <AppBar
+      position='fixed'
+      className={clsx(classes.header, trigger && classes.header2)}
+    >
+      <Toolbar>
+        <Toolbar className={classes.navMenu}>
+          <IconButton
+            edge='start'
+            className={classes.menuButton}
+            onClick={() => setMobile(!mobile)}
+            color='inherit'
+            aria-label='open drawer'
+          >
+            <MenuIcon />
+          </IconButton>
+          {!onMobile ? (
+            <MenuList className={classes.navList} role='presentation'>
+              <MenuItem
+                component={Link}
+                to='/'
+                className='navItem'
+                style={{ marginLeft: -16 }}
+              >
+                Home
+              </MenuItem>
+              <MenuItem component={Link} to='/' className='navItem'>
+                Shop
+              </MenuItem>
+              <MenuItem component={Link} to='/' className='navItem'>
+                About Us
+              </MenuItem>
+            </MenuList>
+          ) : (
+            <Drawer
+              variant='temporary'
+              anchor='left'
+              className={classes.drawer}
+              open={mobile}
+              onClose={() => setMobile(false)}
+              ModalProps={{
+                keepMounted: true, // Better open performance on mobile
+                disablePortal: true,
+              }}
             >
-              <MenuIcon />
-            </IconButton>
-            {!onMobile ? (
-              <MenuList className={classes.navList} role='presentation'>
-                <MenuItem component={Link} to='/' className='navItem'>
+              <MenuList className={classes.navListMobile} role='presentation'>
+                <MenuItem
+                  component={Link}
+                  to='/'
+                  className='navItem'
+                  style={{ marginLeft: -16 }}
+                >
                   Home
                 </MenuItem>
                 <MenuItem component={Link} to='/' className='navItem'>
@@ -134,77 +165,53 @@ const Header = () => {
                   About Us
                 </MenuItem>
               </MenuList>
-            ) : (
-              <Drawer
-                variant='temporary'
-                anchor='left'
-                className={classes.drawer}
-                open={mobile}
-                onClose={() => setMobile(false)}
-                ModalProps={{
-                  keepMounted: true, // Better open performance on mobile
-                  disablePortal: true,
-                }}
+              <IconButton
+                edge='start'
+                className={classes.closeButton}
+                onClick={() => setMobile(false)}
+                color='inherit'
+                aria-label='close drawer'
               >
-                <MenuList className={classes.navListMobile} role='presentation'>
-                  <MenuItem component={Link} to='/' className='navItem'>
-                    Home
-                  </MenuItem>
-                  <MenuItem component={Link} to='/' className='navItem'>
-                    Shop
-                  </MenuItem>
-                  <MenuItem component={Link} to='/' className='navItem'>
-                    About Us
-                  </MenuItem>
-                </MenuList>
-                <IconButton
-                  edge='start'
-                  className={classes.closeButton}
-                  onClick={() => setMobile(false)}
-                  color='inherit'
-                  aria-label='close drawer'
-                >
-                  <CloseIcon />
-                </IconButton>
-              </Drawer>
-            )}
-          </Toolbar>
-          <Toolbar className={classes.logoWrapper}>
-            <img src={logo} alt='logo' className={classes.logo} />
-          </Toolbar>
-          <div className={classes.sectionDesktop}>
-            <Hidden smDown>
-              <IconButton color='inherit'>
-                <SearchIcon height={22} width={22} />
+                <CloseIcon />
               </IconButton>
-            </Hidden>
-            <Hidden smDown>
-              <IconButton color='inherit'>
-                <Badge badgeContent={4} color='secondary'>
-                  <WishlistIcon />
-                </Badge>
-              </IconButton>
-            </Hidden>
+            </Drawer>
+          )}
+        </Toolbar>
+        <Toolbar className={classes.logoWrapper}>
+          <img src={logo} alt='logo' className={classes.logo} />
+        </Toolbar>
+        <div className={classes.sectionDesktop}>
+          <Hidden smDown>
+            <IconButton color='inherit'>
+              <SearchIcon height={22} width={22} />
+            </IconButton>
+          </Hidden>
+          <Hidden smDown>
             <IconButton color='inherit'>
               <Badge badgeContent={4} color='secondary'>
-                <CartIcon />
+                <WishlistIcon />
               </Badge>
             </IconButton>
-            <Hidden smDown>
-              <IconButton
-                edge='end'
-                aria-label='account of current user'
-                aria-haspopup='true'
-                // onClick={handleProfileMenuOpen}
-                color='inherit'
-              >
-                <UserIcon height={22} />
-              </IconButton>
-            </Hidden>
-          </div>
-        </Toolbar>
-      </AppBar>
-    </div>
+          </Hidden>
+          <IconButton color='inherit'>
+            <Badge badgeContent={4} color='secondary'>
+              <CartIcon />
+            </Badge>
+          </IconButton>
+          <Hidden smDown>
+            <IconButton
+              edge='end'
+              aria-label='account of current user'
+              aria-haspopup='true'
+              // onClick={handleProfileMenuOpen}
+              color='inherit'
+            >
+              <UserIcon height={22} />
+            </IconButton>
+          </Hidden>
+        </div>
+      </Toolbar>
+    </AppBar>
   );
 };
 
