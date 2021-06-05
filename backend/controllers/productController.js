@@ -7,7 +7,7 @@ import asyncHandler from 'express-async-handler';
  * @access  Public
  */
 const getProducts = asyncHandler(async (req, res) => {
-  const perPage = 10;
+  const perPage = 8;
   const page = parseInt(req.query.pageNumber) || 1;
 
   const keyword = req.query.keyword
@@ -149,9 +149,28 @@ const createProductReview = asyncHandler(async (req, res) => {
 // @route   GET /api/products/top
 // @access  Public
 const getTopProducts = asyncHandler(async (req, res) => {
-  const products = await Product.find({}).sort({ rating: -1 }).limit(3);
+  const products = await Product.find({}).sort({ rating: -1 }).limit(4);
 
   res.json(products);
+});
+
+/**
+ * @desc    Get latest products
+ * @route   GET /api/products/latest
+ * @access  Public
+ */
+
+const getLatestProducts = asyncHandler(async (req, res, next) => {
+  const perPage = 4;
+  const page = req.query.pageNumber || 1;
+  const count = await Product.countDocuments({});
+
+  const products = await Product.find({})
+    .sort({ createdAt: 'desc' })
+    .limit(perPage)
+    .skip(perPage * (page - 1));
+
+  res.json({ page, pages: Math.ceil(count / perPage), products });
 });
 
 export {
@@ -162,4 +181,5 @@ export {
   updateProduct,
   createProductReview,
   getTopProducts,
+  getLatestProducts,
 };
