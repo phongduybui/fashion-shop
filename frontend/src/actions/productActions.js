@@ -24,6 +24,9 @@ import {
   PRODUCT_LATEST_REQUEST,
   PRODUCT_LATEST_SUCCESS,
   PRODUCT_LATEST_FAIL,
+  PRODUCT_SALE_REQUEST,
+  PRODUCT_SALE_SUCCESS,
+  PRODUCT_SALE_FAIL,
 } from '../constants/productConstants';
 import { logout } from './userActions';
 
@@ -261,6 +264,24 @@ export const listLatestProducts = () => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: PRODUCT_LATEST_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    });
+  }
+};
+
+export const listSaleProducts = () => async (dispatch) => {
+  try {
+    dispatch({ type: PRODUCT_SALE_REQUEST });
+
+    const { data } = await axios.get('/api/products/sale');
+
+    dispatch({ type: PRODUCT_SALE_SUCCESS, payload: data });
+  } catch (error) {
+    dispatch({
+      type: PRODUCT_SALE_FAIL,
       payload:
         error.response && error.response.data.message
           ? error.response.data.message
