@@ -1,5 +1,6 @@
 import {
   CART_ADD_ITEM,
+  CART_OPEN_DRAWER_PREVIEW,
   CART_REMOVE_ITEM,
   CART_SAVE_PAYMENT_METHOD,
   CART_SAVE_SHIPPING_ADDRESS,
@@ -14,8 +15,9 @@ export const addToCart = (id, qty) => async (dispatch, getState) => {
     payload: {
       name: data.name,
       qty: qty,
-      image: data.image,
+      images: data.images,
       price: data.price,
+      sale: data.sale,
       product: data._id,
       countInStock: data.countInStock,
     },
@@ -49,4 +51,8 @@ export const savePaymentMethod = (data) => (dispatch) => {
   });
 
   localStorage.setItem('paymentMethod', JSON.stringify(data));
+};
+
+export const setOpenCartDrawer = (isOpen) => {
+  return { type: CART_OPEN_DRAWER_PREVIEW, payload: isOpen };
 };

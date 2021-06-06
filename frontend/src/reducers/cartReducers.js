@@ -1,5 +1,6 @@
 import {
   CART_ADD_ITEM,
+  CART_OPEN_DRAWER_PREVIEW,
   CART_REMOVE_ITEM,
   CART_SAVE_PAYMENT_METHOD,
   CART_SAVE_SHIPPING_ADDRESS,
@@ -45,4 +46,11 @@ export const cartReducer = (state = { cartItems: [] }, action) => {
     default:
       return state;
   }
+};
+
+export const cartOpenDrawerReducer = (state = false, action) => {
+  if (action.type === CART_OPEN_DRAWER_PREVIEW) {
+    return action.payload;
+  }
+  return state;
 };
