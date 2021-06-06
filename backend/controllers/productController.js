@@ -159,14 +159,30 @@ const getTopProducts = asyncHandler(async (req, res) => {
  * @route   GET /api/products/latest
  * @access  Public
  */
-
 const getLatestProducts = asyncHandler(async (req, res, next) => {
-  const perPage = 4;
+  const perPage = 8;
   const page = req.query.pageNumber || 1;
   const count = await Product.countDocuments({});
 
   const products = await Product.find({})
     .sort({ createdAt: 'desc' })
+    .limit(perPage)
+    .skip(perPage * (page - 1));
+
+  res.json({ page, pages: Math.ceil(count / perPage), products });
+});
+
+/**
+ * @desc    Get sale products
+ * @route   GET /api/products/sale
+ * @access  Public
+ */
+const getSaleProducts = asyncHandler(async (req, res, next) => {
+  const perPage = 8;
+  const page = req.query.pageNumber || 1;
+  const count = await Product.countDocuments({});
+
+  const products = await Product.find({ sale: { $gt: 0 } })
     .limit(perPage)
     .skip(perPage * (page - 1));
 
@@ -182,4 +198,5 @@ export {
   createProductReview,
   getTopProducts,
   getLatestProducts,
+  getSaleProducts,
 };
