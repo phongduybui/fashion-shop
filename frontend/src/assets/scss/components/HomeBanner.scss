@@ -1,11 +1,7 @@
 .banner {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 60px;
+  margin: 80px 0;
   &__inner {
     position: relative;
-    flex-basis: 50%;
-    max-width: 50%;
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -19,7 +15,7 @@
       margin-left: 24px;
     }
 
-    &:nth-of-type(odd) {
+    &--left {
       .banner__content {
         justify-content: flex-end;
       }
@@ -27,7 +23,7 @@
         padding-right: 72px;
       }
     }
-    &:nth-of-type(even) {
+    &--right {
       .banner__content {
         justify-content: flex-start;
       }
