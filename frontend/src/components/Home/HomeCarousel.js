@@ -3,6 +3,30 @@ import Link from '@material-ui/core/Link';
 import 'react-responsive-carousel/lib/styles/carousel.min.css'; // requires a loader
 import { Carousel } from 'react-responsive-carousel';
 
+const dataCarousel = [
+  {
+    image:
+      'https://res.cloudinary.com/phongbuiduy/image/upload/v1623085103/cybershop/carousel/monigote_gnzuhj.jpg',
+    subtitle: "SUMMER '21",
+    title: 'Night Summer Dresses',
+    position: 'left',
+  },
+  {
+    image:
+      'https://res.cloudinary.com/phongbuiduy/image/upload/v1623085132/cybershop/carousel/curly_hair_white-1_x4bo5v.jpg',
+    subtitle: '50% OFF',
+    title: 'New Cocktail Dresses',
+    position: 'right',
+  },
+  {
+    image:
+      'https://res.cloudinary.com/phongbuiduy/image/upload/v1623085147/cybershop/carousel/curly_hair_girl-1_rus3zv.jpg',
+    subtitle: "SPRING/SUMMER '19",
+    title: 'The Weekent Getaway',
+    position: 'left',
+  },
+];
+
 const HomeCarousel = () => {
   return (
     <div>
@@ -10,57 +34,27 @@ const HomeCarousel = () => {
         autoPlay
         interval={5000}
         infiniteLoop
-        emulateTouch
-        showThumbs={false}
         showIndicators
-        showStatus={false}
         showArrows
+        swipeable={false}
+        showThumbs={false}
+        showStatus={false}
         animationHandler='fade'
       >
-        <div className='carousel__slide'>
-          <img
-            src='https://goyacdn.everthemes.com/demo-fashion/wp-content/uploads/sites/3/2020/02/monigote.jpg'
-            alt='a'
-            className='carousel__img'
-          />
-          <div className='carousel__banner carousel__banner--left'>
-            <div className='banner__subtitle'>SUMMER '21</div>
-            <h2 className='banner__title'>Night Summer Dresses</h2>
-            <Link href='#' className='banner__link'>
-              Shop Now
-            </Link>
+        {dataCarousel.map((slide) => (
+          <div className='carousel__slide'>
+            <img src={slide.image} alt='' className='carousel__img' />
+            <div
+              className={`carousel__banner carousel__banner--${slide.position}`}
+            >
+              <div className='banner__subtitle'>{slide.subtitle}</div>
+              <h2 className='banner__title'>{slide.title}</h2>
+              <Link href='#' className='banner__link'>
+                Shop Now
+              </Link>
+            </div>
           </div>
-        </div>
-
-        <div className='carousel__slide'>
-          <img
-            src='https://goyacdn.everthemes.com/demo-fashion/wp-content/uploads/sites/3/2020/02/curly_hair_white-1.jpg'
-            alt='a'
-            className='carousel__img'
-          />
-          <div className='carousel__banner carousel__banner--right'>
-            <div className='banner__subtitle'>SUMMER '21</div>
-            <h2 className='banner__title'>Night Summer Dresses</h2>
-            <Link href='#' className='banner__link'>
-              Shop Now
-            </Link>
-          </div>
-        </div>
-
-        <div className='carousel__slide'>
-          <img
-            src='https://goyacdn.everthemes.com/demo-fashion/wp-content/uploads/sites/3/2020/02/curly_hair_girl-1.jpg'
-            alt='a'
-            className='carousel__img'
-          />
-          <div className='carousel__banner carousel__banner--left'>
-            <div className='banner__subtitle'>SUMMER '21</div>
-            <h2 className='banner__title'>Night Summer Dresses</h2>
-            <Link href='#' className='banner__link'>
-              Shop Now
-            </Link>
-          </div>
-        </div>
+        ))}
       </Carousel>
     </div>
   );
