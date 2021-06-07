@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import clsx from 'clsx';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -14,8 +14,9 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import ProductModalView from './ProductModalView';
-import Product from '../Product';
-import { Button, Hidden, IconButton } from '@material-ui/core';
+import { Button, CardActionArea, Hidden, IconButton } from '@material-ui/core';
+import { addToCart, setOpenCartDrawer } from '../../actions/cartActions';
+import { useDispatch } from 'react-redux';
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant='filled' {...props} />;
@@ -31,9 +32,6 @@ const useStyles = makeStyles((theme) => ({
     },
     '&:hover $groupAction': {
       transform: 'translate(0, -50%)',
-    },
-    '&:hover $wishlist': {
-      opacity: 1,
     },
   },
   mediaWrapper: {
@@ -53,15 +51,9 @@ const useStyles = makeStyles((theme) => ({
   },
   wishlist: {
     position: 'absolute',
-    top: 10,
-    right: 4,
-    padding: 10,
-    opacity: 0,
+    top: 6,
+    right: 10,
     zIndex: 1,
-    transition: 'opacity .3s',
-    '&:hover': {
-      backgroundColor: 'transparent',
-    },
     '& svg': {
       color: '#999',
     },
@@ -71,15 +63,13 @@ const useStyles = makeStyles((theme) => ({
   },
   groupAction: {
     position: 'absolute',
-    top: '50%',
-    right: 0,
-    transform: 'translate(100%, -50%)',
-    width: 50,
-    padding: '0 14px',
+    top: 102,
+    right: 10,
+    transform: 'translate(120%, -50%)',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: 'transparent',
     transition: 'all .3s ease-in-out',
     zIndex: 1,
     '& a + a': {
@@ -88,12 +78,8 @@ const useStyles = makeStyles((theme) => ({
     '& svg': {
       color: '#999',
     },
-    '& a:hover svg': {
+    '& button:hover svg': {
       color: '#fb5d5d',
-    },
-    '& > button': {
-      padding: '12px 0',
-      minWidth: 50,
     },
   },
   sale: {
@@ -116,86 +102,125 @@ const useStyles = makeStyles((theme) => ({
       'row',
       'wrap'
     ),
+    '@media (max-width: 410px)': {
+      flexWrap: 'wrap',
+      '& > button': {
+        backgroundColor: 'rgba(245, 0, 87, 0.05) !important',
+        flexBasis: '100%',
+        marginTop: 10,
+      },
+    },
+  },
+  price: {
+    fontSize: '1rem',
+    fontWeight: 600,
+    color: (props) => props.sale > 0 && '#f50057',
+  },
+  rootPrice: {
+    textDecoration: 'line-through',
   },
 }));
 
-const ProductCard = ({ _id, name, images, price, sale }) => {
+const ProductCard = (props) => {
+  const { _id, name, images, price, sale } = props;
   const [addedWishList, setAddedWishList] = useState(false);
   const [openModal, setOpenModal] = useState(false);
-  const classes = useStyles();
+  const classes = useStyles(props);
+  const dispatch = useDispatch();
+
+  const handleAddToCart = (id) => {
+    dispatch(setOpenCartDrawer(true));
+    dispatch(addToCart(id, 1));
+  };
 
   return (
     <>
       <Card className={classes.root}>
-        <div className={classes.mediaWrapper}>
-          {sale > 0 && <div className={classes.sale}>{`- ${sale}% `}</div>}
-          <Tooltip title='Add to wishlist' placement='top' arrow>
-            <IconButton
-              disableRipple
-              disableFocusRipple
-              disableElevation
-              onClick={() => setAddedWishList(true)}
-              className={classes.wishlist}
-            >
-              <FavoriteBorderOutlinedIcon />
-            </IconButton>
-          </Tooltip>
+        <CardActionArea component={RouterLink} to={`/product/${_id}`}>
+          <div className={classes.mediaWrapper}>
+            {sale > 0 && <div className={classes.sale}>{`- ${sale}% `}</div>}
+            <Tooltip title='Add to wishlist' placement='top' arrow>
+              <IconButton
+                onClick={() => setAddedWishList(true)}
+                className={classes.wishlist}
+              >
+                <FavoriteBorderOutlinedIcon />
+              </IconButton>
+            </Tooltip>
 
-          <Hidden smDown>
-            <div className={classes.groupAction}>
-              <Tooltip title='Quick views' placement='right-start' arrow>
-                <Button onClick={() => setOpenModal(true)}>
-                  <VisibilityOutlinedIcon />
-                </Button>
-              </Tooltip>
-              <Tooltip title='Add to wishlist' placement='right' arrow>
-                <Button>
-                  <FavoriteBorderOutlinedIcon />
-                </Button>
-              </Tooltip>
-              <Tooltip title='Add to cart' placement='right' arrow>
-                <Button>
-                  <AddShoppingCartOutlinedIcon />
-                </Button>
-              </Tooltip>
-            </div>
-          </Hidden>
-
-          <CardMedia
-            className={classes.media}
-            component={'img'}
-            src={images ? images[1] : ''}
-          />
-          <CardMedia
-            className={clsx(classes.media, classes.mediaFront)}
-            component={'img'}
-            src={images ? images[0] : ''}
-          />
-        </div>
-        <CardContent component='div' style={{ paddingBottom: 10 }}>
-          <Tooltip title={name || ''}>
-            <Typography gutterBottom variant='subtitle1' component='div' noWrap>
-              {name}
-            </Typography>
-          </Tooltip>
-          <div className={classes.mediaMobile}>
-            <Typography variant='subtitle2' color='textPrimary' component='div'>
-              ${price}
-            </Typography>
-            <Hidden mdUp>
-              <Tooltip title='Add to cart' placement='bottom' arrow>
-                <Button
-                  color='secondary'
-                  className={classes.cartMobile}
-                  startIcon={<RiShoppingBag3Fill />}
-                  style={{ whiteSpace: 'nowrap' }}
-                >
-                  Add to Cart
-                </Button>
-              </Tooltip>
+            <Hidden smDown>
+              <div className={classes.groupAction}>
+                <Tooltip title='Quick views' placement='right-start' arrow>
+                  <IconButton onClick={() => setOpenModal(true)}>
+                    <VisibilityOutlinedIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title='Add to cart' placement='right' arrow>
+                  <IconButton onClick={() => handleAddToCart(_id)}>
+                    <AddShoppingCartOutlinedIcon />
+                  </IconButton>
+                </Tooltip>
+              </div>
             </Hidden>
+
+            <CardMedia
+              className={classes.media}
+              component={'img'}
+              src={images && images[1]}
+            />
+            <CardMedia
+              className={clsx(classes.media, classes.mediaFront)}
+              component={'img'}
+              src={images && images[0]}
+            />
           </div>
-        </CardContent>
+          <CardContent component='div' style={{ paddingBottom: 10 }}>
+            <Tooltip title={name || ''}>
+              <Typography
+                gutterBottom
+                variant='subtitle1'
+                component='div'
+                noWrap
+              >
+                {name}
+              </Typography>
+            </Tooltip>
+            <div className={classes.mediaMobile}>
+              <Typography
+                variant='subtitle2'
+                color='textPrimary'
+                component='div'
+                className={classes.price}
+                noWrap
+              >
+                {sale ? (
+                  <Typography
+                    variant='subtitle2'
+                    color='textSecondary'
+                    component='span'
+                    className={classes.rootPrice}
+                  >
+                    ${price}
+                  </Typography>
+                ) : null}
+                {'  '}${sale ? price * (1 - sale / 100) : price}
+              </Typography>
+              <Hidden mdUp>
+                <Tooltip title='Add to cart' placement='bottom' arrow>
+                  <Button
+                    onClick={() => handleAddToCart(_id)}
+                    color='secondary'
+                    className={classes.cartMobile}
+                    startIcon={<RiShoppingBag3Fill />}
+                    style={{ whiteSpace: 'nowrap' }}
+                  >
+                    Add to Cart
+                  </Button>
+                </Tooltip>
+              </Hidden>
+            </div>
+          </CardContent>
+        </CardActionArea>
       </Card>
       <Snackbar
         open={addedWishList}
@@ -204,11 +229,11 @@ const ProductCard = ({ _id, name, images, price, sale }) => {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
         <Alert onClose={() => setAddedWishList(false)} severity='success'>
-          Succesful! Product has added to your wishlist.
+          Product has added to your wishlist.
         </Alert>
       </Snackbar>
       <ProductModalView
-        id={_id}
+        {...props}
         openModal={openModal}
         setOpenModal={setOpenModal}
       />
