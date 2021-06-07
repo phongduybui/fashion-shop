@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, IconButton, Link, Typography } from '@material-ui/core';
-import logo from '../assets/images/logo_ver2.png';
+import logo from '../assets/images/logo.png';
 import { makeStyles } from '@material-ui/core/styles';
 import { VscTwitter } from 'react-icons/vsc';
 import { ImGooglePlus } from 'react-icons/im';
@@ -14,14 +14,15 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: '100%',
     paddingTop: 16,
     paddingBottom: 16,
-    '@media (max-width: 600px)': {
-      paddingBottom: 16 + 56, // + height of BottomNavigation
-    },
+    // '@media (max-width: 600px)': {
+    //   paddingBottom: 16 + 56, // + height of BottomNavigation
+    // },
   },
   box: {
     ...theme.mixins.customize.flexMixin('space-between', 'center'),
     color: '#929292',
     '@media (max-width: 960px)': {
+      textAlign: 'center',
       flexDirection: 'column',
       '& $copyright': {
         padding: '10px 0 0',
@@ -30,11 +31,9 @@ const useStyles = makeStyles((theme) => ({
   },
   logoWrapper: {
     ...theme.mixins.customize.centerFlex(),
-    position: 'relative',
-    top: 5,
   },
   logo: {
-    maxWidth: 120,
+    maxWidth: 140,
   },
   copyright: {
     flexGrow: 1,
@@ -47,7 +46,9 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 18,
     margin: '0 10px',
     color: '#929292',
+    transition: 'transform .3s',
     '&:hover': {
+      transform: 'translateY(-1px)',
       color: theme.palette.secondary.main,
     },
   },
@@ -67,7 +68,7 @@ const Footer = () => {
             component='p'
             className={classes.copyright}
           >
-            Copyright &copy; 2021 CyberShop. All Right Reserved.
+            Copyright &copy; 2021 Fashion Shop. All Right Reserved.
           </Typography>
           <div className={classes.socialGroup}>
             <IconButton className={classes.icon}>
