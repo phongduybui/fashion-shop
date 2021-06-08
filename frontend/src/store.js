@@ -11,6 +11,7 @@ import {
   productTopRatedReducer,
   productLatestReducer,
   productSaleReducer,
+  productRelatedReducer,
 } from './reducers/productReducers.js';
 import { cartOpenDrawerReducer, cartReducer } from './reducers/cartReducers';
 import {
@@ -41,6 +42,7 @@ const reducers = combineReducers({
   productTopRated: productTopRatedReducer,
   productLatest: productLatestReducer,
   productSale: productSaleReducer,
+  productRelated: productRelatedReducer,
   cart: cartReducer,
   cartOpenDrawer: cartOpenDrawerReducer,
   userLogin: userLoginReducer,

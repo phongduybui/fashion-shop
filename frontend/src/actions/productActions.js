@@ -27,6 +27,9 @@ import {
   PRODUCT_SALE_REQUEST,
   PRODUCT_SALE_SUCCESS,
   PRODUCT_SALE_FAIL,
+  PRODUCT_RELATED_REQUEST,
+  PRODUCT_RELATED_FAIL,
+  PRODUCT_RELATED_SUCCESS,
 } from '../constants/productConstants';
 import { logout } from './userActions';
 
@@ -282,6 +285,26 @@ export const listSaleProducts = () => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: PRODUCT_SALE_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    });
+  }
+};
+
+export const listRelatedProducts = (category) => async (dispatch) => {
+  try {
+    dispatch({ type: PRODUCT_RELATED_REQUEST });
+
+    const { data } = await axios.get(
+      `/api/products/related?category=${category}`
+    );
+
+    dispatch({ type: PRODUCT_RELATED_SUCCESS, payload: data });
+  } catch (error) {
+    dispatch({
+      type: PRODUCT_RELATED_FAIL,
       payload:
         error.response && error.response.data.message
           ? error.response.data.message
