@@ -159,7 +159,7 @@ const getTopProducts = asyncHandler(async (req, res) => {
  * @route   GET /api/products/latest
  * @access  Public
  */
-const getLatestProducts = asyncHandler(async (req, res, next) => {
+const getLatestProducts = asyncHandler(async (req, res) => {
   const perPage = 8;
   const page = req.query.pageNumber || 1;
   const count = await Product.countDocuments({});
@@ -177,12 +177,30 @@ const getLatestProducts = asyncHandler(async (req, res, next) => {
  * @route   GET /api/products/sale
  * @access  Public
  */
-const getSaleProducts = asyncHandler(async (req, res, next) => {
+const getSaleProducts = asyncHandler(async (req, res) => {
   const perPage = 8;
   const page = req.query.pageNumber || 1;
   const count = await Product.countDocuments({});
 
   const products = await Product.find({ sale: { $gt: 0 } })
+    .limit(perPage)
+    .skip(perPage * (page - 1));
+
+  res.json({ page, pages: Math.ceil(count / perPage), products });
+});
+
+/**
+ * @desc    Get related products
+ * @route   GET /api/products/sale
+ * @access  Public
+ */
+const getRelatedProducts = asyncHandler(async (req, res) => {
+  const category = req.query.category || 'clothes';
+  const perPage = 4;
+  const page = req.query.pageNumber || 1;
+  const count = await Product.countDocuments({});
+
+  const products = await Product.find({ category })
     .limit(perPage)
     .skip(perPage * (page - 1));
 
@@ -199,4 +217,5 @@ export {
   getTopProducts,
   getLatestProducts,
   getSaleProducts,
+  getRelatedProducts,
 };
