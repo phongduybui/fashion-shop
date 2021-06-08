@@ -4,6 +4,7 @@ import {
   centerFlex,
   textOverflowEllipse,
   textClamp,
+  breadcrumbs,
 } from './mixins';
 
 const theme = createMuiTheme({
@@ -16,6 +17,7 @@ const theme = createMuiTheme({
       centerFlex,
       textClamp,
       textOverflowEllipse,
+      breadcrumbs,
     },
   },
   breakpoints: {

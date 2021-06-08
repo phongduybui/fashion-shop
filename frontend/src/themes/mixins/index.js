@@ -32,4 +32,21 @@ const textClamp = (lineClamp) => ({
   WebkitLineClamp: lineClamp,
 });
 
-export { flexMixin, centerFlex, textOverflowEllipse, textClamp };
+const breadcrumbs = {
+  marginTop: 64,
+  paddingTop: 30,
+  paddingBottom: 30,
+  '& .MuiBreadcrumbs-ol': {
+    justifyContent: 'center',
+  },
+  '@media (max-width: 600px)': {
+    marginTop: 56,
+    '& .MuiBreadcrumbs-li': {
+      textAlign: 'center',
+      maxWidth: '300px',
+      ...textOverflowEllipse,
+    },
+  },
+};
+
+export { flexMixin, centerFlex, textOverflowEllipse, textClamp, breadcrumbs };
