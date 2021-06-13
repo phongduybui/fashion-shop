@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import clsx from 'clsx';
-import logo from '../assets/images/logo_ver2.png';
-import { ReactComponent as UserIcon } from '../assets/icons/user.svg';
+import logo from '../assets/images/logo.png';
 import { ReactComponent as SearchIcon } from '../assets/icons/search.svg';
 import { ReactComponent as CartIcon } from '../assets/icons/cart.svg';
 import { ReactComponent as WishlistIcon } from '../assets/icons/wishlist.svg';
@@ -16,8 +15,11 @@ import MenuItem from '@material-ui/core/MenuItem';
 import MenuIcon from '@material-ui/icons/Menu';
 import CloseIcon from '@material-ui/icons/Close';
 import MenuList from '@material-ui/core/MenuList';
+import HeaderUser from './HeaderUser';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { Drawer, Hidden } from '@material-ui/core';
+import { setOpenCartDrawer } from '../actions/cartActions';
+import { useDispatch, useSelector } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -26,10 +28,10 @@ const useStyles = makeStyles((theme) => ({
     transition: 'all .2s',
     boxShadow: '0px 2px 8px -1px rgb(0 0 0 / 10%)',
     paddingRight: '0 !important',
-    [theme.breakpoints.up('md')]: {
-      backgroundColor: 'transparent',
-      boxShadow: 'none',
-    },
+    // [theme.breakpoints.up('md')]: {
+    //   backgroundColor: 'transparent',
+    //   boxShadow: 'none',
+    // },
   },
   header2: {
     backgroundColor: '#fff',
@@ -55,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
   },
   logo: {
     flexGrow: 1,
-    maxWidth: 120,
+    maxWidth: 140,
   },
   navMenu: {
     flexBasis: '40%',
@@ -93,7 +95,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Header = () => {
+const Header = (props) => {
+  const dispatch = useDispatch();
+  const { cartItems } = useSelector((state) => state.cart);
+  const { userInfo } = useSelector((state) => state.userLogin);
   const [mobile, setMobile] = useState(false);
   const onMobile = useMediaQuery('(max-width:740px)');
 
@@ -123,6 +128,7 @@ const Header = () => {
           {!onMobile ? (
             <MenuList className={classes.navList} role='presentation'>
               <MenuItem
+                disableRipple
                 component={Link}
                 to='/'
                 className='navItem'
@@ -130,10 +136,20 @@ const Header = () => {
               >
                 Home
               </MenuItem>
-              <MenuItem component={Link} to='/' className='navItem'>
+              <MenuItem
+                component={Link}
+                to='/'
+                className='navItem'
+                disableRipple
+              >
                 Shop
               </MenuItem>
-              <MenuItem component={Link} to='/' className='navItem'>
+              <MenuItem
+                component={Link}
+                to='/'
+                className='navItem'
+                disableRipple
+              >
                 About Us
               </MenuItem>
             </MenuList>
@@ -154,7 +170,7 @@ const Header = () => {
                   component={Link}
                   to='/'
                   className='navItem'
-                  style={{ marginLeft: -16 }}
+                  style={{ marginLeft: onMobile ? 0 : -16 }}
                 >
                   Home
                 </MenuItem>
@@ -177,9 +193,9 @@ const Header = () => {
             </Drawer>
           )}
         </Toolbar>
-        <Toolbar className={classes.logoWrapper}>
+        <Link to='/' className={classes.logoWrapper}>
           <img src={logo} alt='logo' className={classes.logo} />
-        </Toolbar>
+        </Link>
         <div className={classes.sectionDesktop}>
           <Hidden smDown>
             <IconButton color='inherit'>
@@ -193,21 +209,22 @@ const Header = () => {
               </Badge>
             </IconButton>
           </Hidden>
-          <IconButton color='inherit'>
-            <Badge badgeContent={4} color='secondary'>
+          <IconButton
+            color='inherit'
+            onClick={() => dispatch(setOpenCartDrawer(true))}
+          >
+            <Badge badgeContent={cartItems.length} color='secondary'>
               <CartIcon />
             </Badge>
           </IconButton>
           <Hidden smDown>
-            <IconButton
+            {/* <IconButton
               edge='end'
-              aria-label='account of current user'
-              aria-haspopup='true'
               // onClick={handleProfileMenuOpen}
-              color='inherit'
             >
               <UserIcon height={22} />
-            </IconButton>
+            </IconButton> */}
+            <HeaderUser />
           </Hidden>
         </div>
       </Toolbar>
