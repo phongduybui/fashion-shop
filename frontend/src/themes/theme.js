@@ -9,7 +9,7 @@ import {
 
 const theme = createMuiTheme({
   typography: {
-    fontFamily: ['Jost', 'Roboto', 'sans-serif'].join(','),
+    fontFamily: ['Jost', 'Poppins', 'sans-serif'].join(','),
   },
   mixins: {
     customize: {
