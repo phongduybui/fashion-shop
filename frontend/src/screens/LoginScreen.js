@@ -22,6 +22,8 @@ import IconButton from '@material-ui/core/IconButton';
 import Hidden from '@material-ui/core/Hidden';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
+import InputController from '../components/InputController';
+import { useForm, FormProvider } from 'react-hook-form';
 import { VscEyeClosed, VscEye } from 'react-icons/vsc';
 import { BiArrowBack } from 'react-icons/bi';
 
@@ -78,9 +80,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const LoginScreen = ({ location, history }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+
+  const methods = useForm();
+  const { handleSubmit } = methods;
 
   const dispatch = useDispatch();
   const classes = useStyles();
@@ -96,8 +99,7 @@ const LoginScreen = ({ location, history }) => {
     }
   }, [history, userInfo, redirect]);
 
-  const submitHandler = (e) => {
-    e.preventDefault();
+  const submitHandler = ({ email, password }) => {
     dispatch(login(email, password));
   };
 
@@ -116,55 +118,65 @@ const LoginScreen = ({ location, history }) => {
               <img src={logo} alt='' className={classes.logo} />
               {loading && <Loader />}
               {error && <Message mt={24}>{error}</Message>}
-              <form className={classes.form} onSubmit={submitHandler}>
-                <FormControl fullWidth style={{ marginBottom: 16 }}>
-                  <InputLabel htmlFor='email' style={{ fontSize: 14 }}>
-                    Email
-                  </InputLabel>
-                  <Input
-                    id='email'
-                    type='email'
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </FormControl>
-                <FormControl fullWidth style={{ marginBottom: 8 }}>
-                  <InputLabel htmlFor='password' style={{ fontSize: 14 }}>
-                    Password
-                  </InputLabel>
-                  <Input
-                    id='password'
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    endAdornment={
-                      password && (
-                        <InputAdornment position='end'>
-                          <IconButton
-                            onClick={() => setShowPassword(!showPassword)}
-                            onMouseDown={(e) => e.preventDefault()}
-                          >
-                            {showPassword ? <VscEye /> : <VscEyeClosed />}
-                          </IconButton>
-                        </InputAdornment>
-                      )
-                    }
-                  />
-                </FormControl>
-                <Box display='flex' justifyContent='flex-end' pb={3} pt={1}>
-                  <Link component={RouterLink} to='/forgot-pasword'>
-                    Forgot password?
-                  </Link>
-                </Box>
-                <Button
-                  type='submit'
-                  variant='contained'
-                  color='secondary'
-                  fullWidth
+              <FormProvider {...methods}>
+                <form
+                  className={classes.form}
+                  onSubmit={handleSubmit(submitHandler)}
                 >
-                  Sign in
-                </Button>
-              </form>
+                  <FormControl fullWidth style={{ marginBottom: 16 }}>
+                    <InputController
+                      name='email'
+                      label='Email'
+                      required
+                      rules={{
+                        pattern: {
+                          value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                          message: 'Invalid email address',
+                        },
+                      }}
+                    />
+                  </FormControl>
+                  <FormControl fullWidth style={{ marginBottom: 8 }}>
+                    <InputController
+                      type={showPassword ? 'text' : 'password'}
+                      name='password'
+                      label='Password'
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position='end'>
+                            <IconButton
+                              onClick={() => setShowPassword(!showPassword)}
+                              onMouseDown={(e) => e.preventDefault()}
+                            >
+                              {showPassword ? <VscEye /> : <VscEyeClosed />}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                      required
+                      rules={{
+                        minLength: {
+                          value: 6,
+                          message: 'Password must be more than 6 characters',
+                        },
+                      }}
+                    />
+                  </FormControl>
+                  <Box display='flex' justifyContent='flex-end' pb={3} pt={1}>
+                    <Link component={RouterLink} to='/forgot-pasword'>
+                      Forgot password?
+                    </Link>
+                  </Box>
+                  <Button
+                    type='submit'
+                    variant='contained'
+                    color='secondary'
+                    fullWidth
+                  >
+                    Sign in
+                  </Button>
+                </form>
+              </FormProvider>
               <Box my={4}>
                 New customer?{' '}
                 <Link component={RouterLink} to='/register'>

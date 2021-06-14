@@ -9,6 +9,7 @@ import {
   createMuiTheme,
   ThemeProvider,
 } from '@material-ui/core/styles';
+import { useForm, FormProvider } from 'react-hook-form';
 import { ReactComponent as LoginImage } from '../assets/images/login-illu.svg';
 import logo from '../assets/images/logo.png';
 import Paper from '@material-ui/core/Paper';
@@ -17,11 +18,10 @@ import Box from '@material-ui/core/Box';
 import Link from '@material-ui/core/Link';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
 import Hidden from '@material-ui/core/Hidden';
+import InputController from '../components/InputController';
 import { VscEyeClosed, VscEye } from 'react-icons/vsc';
 import { BiArrowBack } from 'react-icons/bi';
 
@@ -79,12 +79,10 @@ const useStyles = makeStyles((theme) => ({
 
 const RegisterScreen = ({ location, history }) => {
   const classes = useStyles();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [message, setMessage] = useState(null);
+
+  const methods = useForm();
+  const { handleSubmit, getValues } = methods;
 
   const dispatch = useDispatch();
 
@@ -99,13 +97,8 @@ const RegisterScreen = ({ location, history }) => {
     }
   }, [history, userInfo, redirect]);
 
-  const submitHandler = (e) => {
-    e.preventDefault();
-    if (password !== confirmPassword) {
-      setMessage('Password do not match');
-    } else {
-      dispatch(register(name, email, password));
-    }
+  const submitHandler = ({ name, email, password }) => {
+    dispatch(register(name, email, password));
   };
 
   return (
@@ -121,80 +114,82 @@ const RegisterScreen = ({ location, history }) => {
                 className={classes.backIcon}
               />
               <img src={logo} alt='' width='120px' />
-              {loading && <Loader />}
+              {loading && <Loader my={16} />}
               {error && <Message mt={8}>{error}</Message>}
-              {message && <Message mt={8}>{message}</Message>}
-              <form className={classes.form} onSubmit={submitHandler}>
-                <FormControl fullWidth style={{ marginBottom: 16 }}>
-                  <InputLabel htmlFor='name' style={{ fontSize: 14 }}>
-                    Name
-                  </InputLabel>
-                  <Input
-                    id='name'
-                    type='text'
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                </FormControl>
-                <FormControl fullWidth style={{ marginBottom: 16 }}>
-                  <InputLabel htmlFor='email' style={{ fontSize: 14 }}>
-                    Email
-                  </InputLabel>
-                  <Input
-                    id='email'
-                    type='email'
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </FormControl>
-                <FormControl fullWidth style={{ marginBottom: 8 }}>
-                  <InputLabel htmlFor='password' style={{ fontSize: 14 }}>
-                    Password
-                  </InputLabel>
-                  <Input
-                    id='password'
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </FormControl>
-                <FormControl fullWidth style={{ marginBottom: 8 }}>
-                  <InputLabel htmlFor='confirmPass' style={{ fontSize: 14 }}>
-                    Confirm Password
-                  </InputLabel>
-                  <Input
-                    id='confirmPass'
-                    type={showPassword ? 'text' : 'password'}
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    endAdornment={
-                      confirmPassword && (
-                        <InputAdornment position='end'>
-                          <IconButton
-                            onClick={() => setShowPassword(!showPassword)}
-                            onMouseDown={(e) => e.preventDefault()}
-                          >
-                            {showPassword ? <VscEye /> : <VscEyeClosed />}
-                          </IconButton>
-                        </InputAdornment>
-                      )
-                    }
-                  />
-                </FormControl>
-                <Box display='flex' justifyContent='flex-end' pb={2} pt={1}>
-                  <Link component={RouterLink} to='/forgot-pasword'>
-                    Forgot password?
-                  </Link>
-                </Box>
-                <Button
-                  type='submit'
-                  variant='contained'
-                  color='secondary'
-                  fullWidth
+              <FormProvider {...methods}>
+                <form
+                  className={classes.form}
+                  onSubmit={handleSubmit(submitHandler)}
                 >
-                  Sign up
-                </Button>
-              </form>
+                  <FormControl fullWidth style={{ marginBottom: 16 }}>
+                    <InputController name='name' label='Name' required />
+                  </FormControl>
+                  <FormControl fullWidth style={{ marginBottom: 16 }}>
+                    <InputController
+                      name='email'
+                      label='Email'
+                      required
+                      rules={{
+                        pattern: {
+                          value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                          message: 'Invalid email address',
+                        },
+                      }}
+                    />
+                  </FormControl>
+                  <FormControl fullWidth style={{ marginBottom: 8 }}>
+                    <InputController
+                      type={showPassword ? 'text' : 'password'}
+                      name='password'
+                      label='Password'
+                      required
+                      rules={{
+                        minLength: {
+                          value: 6,
+                          message: 'Password must be more than 6 characters',
+                        },
+                      }}
+                    />
+                  </FormControl>
+                  <FormControl fullWidth style={{ marginBottom: 8 }}>
+                    <InputController
+                      type={showPassword ? 'text' : 'password'}
+                      name='confirmPassword'
+                      label='Confirm Password'
+                      required
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position='end'>
+                            <IconButton
+                              onClick={() => setShowPassword(!showPassword)}
+                              onMouseDown={(e) => e.preventDefault()}
+                            >
+                              {showPassword ? <VscEye /> : <VscEyeClosed />}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                      rules={{
+                        validate: {
+                          matchPassword: (value) =>
+                            value !== getValues('password')
+                              ? 'Password do not match'
+                              : true,
+                        },
+                      }}
+                    />
+                  </FormControl>
+                  <Button
+                    type='submit'
+                    variant='contained'
+                    color='secondary'
+                    fullWidth
+                    style={{ marginTop: 16 }}
+                  >
+                    Sign up
+                  </Button>
+                </form>
+              </FormProvider>
               <Box my={2}>
                 Have an account?{' '}
                 <Link component={RouterLink} to='/login'>
