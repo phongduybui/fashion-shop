@@ -1,22 +1,24 @@
-import { Spinner } from 'react-bootstrap';
-
 import React from 'react';
+import { CircularProgress } from '@material-ui/core';
 
-const Loader = () => {
+const Loader = ({ my }) => {
   return (
-    <Spinner
-      animation='border'
-      role='status'
+    <div
       style={{
-        width: 100,
-        height: 100,
-        margin: 'auto',
-        display: 'block',
+        display: 'flex',
+        justifyContent: 'center',
+        width: '100%',
+        marginTop: my,
+        marginBottom: my,
       }}
     >
-      <span className='sr-only'>Loading...</span>
-    </Spinner>
+      <CircularProgress color='secondary' />
+    </div>
   );
+};
+
+Loader.defaultProps = {
+  my: 40,
 };
 
 export default Loader;
