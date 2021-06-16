@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   fetchProductDetails,
@@ -6,6 +6,9 @@ import {
 } from '../actions/productActions.js';
 import { Link as RouterLink } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
+import { useForm, Controller } from 'react-hook-form';
+import { addToCart } from '../actions/cartActions';
+import { openSnackbar } from '../actions/snackbarActions';
 import Meta from '../components/Meta';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Link from '@material-ui/core/Link';
@@ -16,7 +19,6 @@ import 'react-responsive-carousel/lib/styles/carousel.min.css'; // requires a lo
 import { Carousel } from 'react-responsive-carousel';
 import { PRODUCT_CREATE_REVIEW_RESET } from '../constants/productConstants.js';
 import {
-  Avatar,
   Box,
   Button,
   Chip,
@@ -24,6 +26,9 @@ import {
   Divider,
   Grid,
   Typography,
+  MenuItem,
+  TextField,
+  FormHelperText,
 } from '@material-ui/core';
 import Rating from '@material-ui/lab/Rating';
 import Radio from '@material-ui/core/Radio';
@@ -31,7 +36,6 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
-import QuantityInput from '../components/QuantityInput.js';
 import { FiShoppingBag, FiHeart } from 'react-icons/fi';
 import { FaTags } from 'react-icons/fa';
 import { FaShareAlt } from 'react-icons/fa';
@@ -107,7 +111,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ProductScreen = ({ history, match }) => {
-  const [size, setSize] = useState('m');
+  const { handleSubmit, control } = useForm();
 
   const dispatch = useDispatch();
   const productDetails = useSelector((state) => state.productDetails);
@@ -119,8 +123,15 @@ const ProductScreen = ({ history, match }) => {
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
 
-  const handleSizeChange = (event) => {
-    setSize(event.target.value);
+  const addToCartHandler = ({ qty, size }) => {
+    dispatch(addToCart(match.params.id, qty, size));
+    dispatch(
+      openSnackbar('The product has been added to cart!', 'success', {
+        hasLink: true,
+        to: '/cart',
+        text: 'View Cart',
+      })
+    );
   };
 
   useEffect(() => {
@@ -190,7 +201,7 @@ const ProductScreen = ({ history, match }) => {
                   <Typography
                     component='span'
                     style={{ marginLeft: 5 }}
-                    color='secondary'
+                    color={product.countInStock > 0 ? 'primary' : 'secondary'}
                   >
                     {`Status: ${
                       product.countInStock > 0 ? 'In Stock' : 'Out of Stock'
@@ -226,52 +237,89 @@ const ProductScreen = ({ history, match }) => {
                 >
                   {product.description}
                 </Typography>
-                <FormControl
-                  fullWidth
-                  component='fieldset'
-                  classes={{ root: classes.sizeFormControl }}
-                >
-                  <FormLabel
-                    component='legend'
-                    color='secondary'
-                    className={classes.label}
+                <form>
+                  <FormControl
+                    fullWidth
+                    component='fieldset'
+                    classes={{ root: classes.sizeFormControl }}
                   >
-                    Size: {size.toUpperCase()}
-                  </FormLabel>
-                  <RadioGroup
-                    classes={{ root: classes.sizeFormGroup }}
-                    aria-label='size'
-                    name='size'
-                    value={size}
-                    onChange={handleSizeChange}
-                  >
-                    {['s', 'm', 'l', 'xl'].map((currSize) => (
-                      <FormControlLabel
-                        value={currSize}
-                        control={<Radio />}
-                        label={currSize.toUpperCase()}
-                        key={currSize}
-                      />
-                    ))}
-                  </RadioGroup>
-                </FormControl>
-                <FormControl fullWidth>
-                  <FormLabel
-                    component='legend'
-                    color='secondary'
-                    className={classes.label}
-                    style={{ marginBottom: 15 }}
-                  >
-                    Quantity:
-                  </FormLabel>
-                  <QuantityInput />
-                </FormControl>
+                    <FormLabel
+                      component='legend'
+                      color='secondary'
+                      className={classes.label}
+                    >
+                      Size:
+                    </FormLabel>
+                    <Controller
+                      name='size'
+                      control={control}
+                      defaultValue=''
+                      render={({ field, fieldState: { error } }) => (
+                        <>
+                          <RadioGroup
+                            classes={{ root: classes.sizeFormGroup }}
+                            {...field}
+                          >
+                            {product.size &&
+                              Object.keys(product.size).map(
+                                (value) =>
+                                  product.size[value] > 0 && (
+                                    <FormControlLabel
+                                      value={value}
+                                      control={<Radio />}
+                                      label={value.toUpperCase()}
+                                      key={value}
+                                    />
+                                  )
+                              )}
+                          </RadioGroup>
+                          {error && (
+                            <FormHelperText error>
+                              {error.message}
+                            </FormHelperText>
+                          )}
+                        </>
+                      )}
+                      rules={{ required: 'Please select size!' }}
+                    />
+                  </FormControl>
+                  <FormControl variant='outlined' style={{ width: 250 }}>
+                    <FormLabel
+                      className={classes.label}
+                      style={{ marginBottom: 16 }}
+                    >
+                      Quantity
+                    </FormLabel>
+                    <Controller
+                      name='qty'
+                      control={control}
+                      defaultValue={1}
+                      render={({ field }) => (
+                        <TextField
+                          select
+                          label='Select quantity'
+                          variant='outlined'
+                          {...field}
+                        >
+                          {Array(product.countInStock)
+                            .fill()
+                            .map((item, index) => (
+                              <MenuItem value={index + 1} key={index + 1}>
+                                {index + 1}
+                              </MenuItem>
+                            ))}
+                        </TextField>
+                      )}
+                    />
+                  </FormControl>
+                </form>
                 <Button
                   variant='contained'
                   color='secondary'
                   startIcon={<FiShoppingBag />}
                   className={classes.button}
                   disabled={product.countInStock === 0}
+                  onClick={handleSubmit(addToCartHandler)}
                 >
                   Add to Cart
                 </Button>
