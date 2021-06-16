@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Footer from './components/Footer';
 import Header from './components/Header';
 import HomeScreen from './screens/HomeScreen';
@@ -17,30 +17,38 @@ import UserEditScreen from './screens/UserEditScreen';
 import ProductListScreen from './screens/ProductListScreen';
 import ProductEditScreen from './screens/ProductEditScreen';
 import OrderListScreen from './screens/OrderListScreen';
+import CartPreview from './components/Drawer/CartPreview';
+import SnackbarMessage from './components/SnackbarMessage';
 
 const App = () => {
   return (
     <Router>
-      <Header />
-      <main>
-        <Route path='/admin/orderlist' component={OrderListScreen} />
-        <Route path='/admin/product/:id' component={ProductEditScreen} />
-        <Route path='/admin/productlist' component={ProductListScreen} />
-        <Route path='/admin/user/:id' component={UserEditScreen} />
-        <Route path='/admin/userlist' component={UserListScreen} />
-        <Route path='/product/:id' component={ProductScreen} />
-        <Route path='/cart/:id?' component={CartScreen} />
-        <Route path='/login' component={LoginScreen} />
-        <Route path='/register' component={RegisterScreen} />
-        <Route path='/profile' component={ProfileScreen} />
-        <Route path='/shipping' component={ShippingScreen} />
-        <Route path='/payment' component={PaymentScreen} />
-        <Route path='/placeorder' component={PlaceOrderScreen} />
-        <Route path='/order/:id' component={OrderScreen} />
-        <Route path='/search' component={HomeScreen} exact />
-        <Route path='/' component={HomeScreen} exact />
-      </main>
-      <Footer />
+      <Switch>
+        <Route path='/login' component={LoginScreen} exact />
+        <Route path='/register' component={RegisterScreen} exact />
+        <Route>
+          <Header />
+          <main className='main'>
+            <Route path='/admin/orderlist' component={OrderListScreen} />
+            <Route path='/admin/product/:id' component={ProductEditScreen} />
+            <Route path='/admin/productlist' component={ProductListScreen} />
+            <Route path='/admin/user/:id' component={UserEditScreen} />
+            <Route path='/admin/userlist' component={UserListScreen} />
+            <Route path='/product/:id' component={ProductScreen} />
+            <Route path='/cart/:id?' component={CartScreen} />
+            <Route path='/profile' component={ProfileScreen} />
+            <Route path='/shipping' component={ShippingScreen} />
+            <Route path='/payment' component={PaymentScreen} />
+            <Route path='/placeorder' component={PlaceOrderScreen} />
+            <Route path='/order/:id' component={OrderScreen} />
+            <Route path='/search' component={HomeScreen} exact />
+            <Route path='/' component={HomeScreen} exact />
+          </main>
+          <Footer />
+        </Route>
+      </Switch>
+      <CartPreview />
+      <SnackbarMessage />
     </Router>
   );
 };
