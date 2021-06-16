@@ -14,6 +14,7 @@ import {
   productRelatedReducer,
 } from './reducers/productReducers.js';
 import { cartOpenDrawerReducer, cartReducer } from './reducers/cartReducers';
+import { snackbarReducer } from './reducers/snackbarReducers';
 import {
   orderCreateReducer,
   orderDetailsReducer,
@@ -58,6 +59,7 @@ const reducers = combineReducers({
   orderDeliver: orderDeliverReducer,
   orderListMy: orderListMyReducer,
   orderList: orderListReducer,
+  snackbarState: snackbarReducer,
 });
 
 const cartItemsFromStorage = localStorage.getItem('cartItems')
