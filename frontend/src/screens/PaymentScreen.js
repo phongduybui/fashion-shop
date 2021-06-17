@@ -1,12 +1,61 @@
 import React, { useState } from 'react';
-import { Form, Button, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import FormContainer from '../components/FormContainer';
 import CheckoutSteps from '../components/CheckoutSteps';
 import { savePaymentMethod } from '../actions/cartActions';
 import Meta from '../components/Meta';
+import {
+  Button,
+  Container,
+  Grid,
+  Paper,
+  Typography,
+  FormControl,
+  FormHelperText,
+  Breadcrumbs,
+  Link,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+} from '@material-ui/core';
+import { ReactComponent as Banner } from '../assets/images/payment.svg';
+import { Link as RouterLink } from 'react-router-dom';
+import { makeStyles } from '@material-ui/core/styles';
+import { useForm, FormProvider, Controller } from 'react-hook-form';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+
+const useStyles = makeStyles((theme) => ({
+  breadcrumbsContainer: {
+    ...theme.mixins.customize.breadcrumbs,
+  },
+  content: {
+    padding: '8px 32px',
+    boxShadow: '0 10px 31px 0 rgba(0,0,0,0.05)',
+    [theme.breakpoints.down('sm')]: {
+      padding: 32,
+    },
+  },
+  form: {
+    marginTop: 16,
+    '& > *': {
+      marginBottom: 16,
+    },
+  },
+  banner: {
+    width: '100%',
+    height: 380,
+  },
+  payment: {
+    ...theme.mixins.customize.centerFlex(),
+  },
+}));
 
 const PaymentScreen = ({ history }) => {
+  const dispatch = useDispatch();
+  const classes = useStyles();
+  const methods = useForm();
+  const { handleSubmit, control } = methods;
+
   const cart = useSelector((state) => state.cart);
   const { shippingAddress } = cart;
 
@@ -14,52 +63,91 @@ const PaymentScreen = ({ history }) => {
     history.push('/shipping');
   }
 
-  const [paymentMethod, setPaymentMethod] = useState('PayPal');
-
-  const dispatch = useDispatch();
-
-  const submitHandler = (e) => {
-    e.preventDefault();
+  const submitHandler = ({ paymentMethod }) => {
     dispatch(savePaymentMethod(paymentMethod));
     history.push('/placeorder');
   };
 
   return (
-    <>
-      <Meta title='Payment | CyberShop' />
-      <FormContainer>
-        <CheckoutSteps step1 step2 step3 />
-        <h1 className='my-3'>Payment Method</h1>
-        <Form onSubmit={submitHandler}>
-          <Form.Group>
-            <Form.Label as='legend'>Select Method</Form.Label>
-            <Col className='py-3'>
-              <Form.Check
-                type='radio'
-                label='PayPal or Credit Card'
-                id='PayPal'
-                name='paymentMethod'
-                value='PayPal'
-                checked
-                onChange={(e) => setPaymentMethod(e.target.value)}
-              ></Form.Check>
-              {/* <Form.Check
-                type='radio'
-                label='Stripe'
-                id='Stripe'
-                name='paymentMethod'
-                value='Stripe'
-                onChange={(e) => setPaymentMethod(e.target.value)}
-              ></Form.Check> */}
-            </Col>
-          </Form.Group>
-
-          <Button type='submit' variant='primary' className='my-3'>
-            Continue
-          </Button>
-        </Form>
-      </FormContainer>
-    </>
+    <Container maxWidth='xl' style={{ marginBottom: 48 }}>
+      <Meta title='Payment | FashionShop' />
+      <Grid container className={classes.breadcrumbsContainer}>
+        <Grid item xs={12}>
+          <Breadcrumbs
+            separator={<NavigateNextIcon fontSize='small' />}
+            style={{ marginBottom: 24 }}
+          >
+            <Link color='inherit' component={RouterLink} to='/'>
+              Home
+            </Link>
+            <Link color='textPrimary' component={RouterLink} to='/payment'>
+              Payment
+            </Link>
+          </Breadcrumbs>
+          <CheckoutSteps step={2} />
+        </Grid>
+      </Grid>
+      <Paper elevation={0} className={classes.content}>
+        <Grid container spacing={0} alignItems='center'>
+          <Grid item xs={12} md={4} className={classes.payment}>
+            <div>
+              <Typography variant='h5' gutterBottom>
+                Payment Methods
+              </Typography>
+              <FormProvider {...methods}>
+                <form
+                  className={classes.form}
+                  onSubmit={handleSubmit(submitHandler)}
+                >
+                  <Controller
+                    name='paymentMethod'
+                    defaultValue={'PayPal'}
+                    control={control}
+                    render={({ field, fieldState: { error } }) => (
+                      <FormControl component='fieldset' error={error} fullWidth>
+                        <FormLabel component='legend'>Select method:</FormLabel>
+                        <RadioGroup {...field}>
+                          <FormControlLabel
+                            value='PayPal'
+                            control={<Radio />}
+                            label='PayPal or Credit Card'
+                          />
+                          <FormControlLabel
+                            value='Stripe'
+                            control={<Radio />}
+                            label='Stripe'
+                          />
+                        </RadioGroup>
+                        {error && (
+                          <FormHelperText style={{ maxWidth: 200 }}>
+                            {error.message}
+                          </FormHelperText>
+                        )}
+                      </FormControl>
+                    )}
+                    rules={{
+                      required: '(*) Please choose payment methods',
+                      validate: {
+                        checkValue: (v) =>
+                          v === 'Stripe'
+                            ? 'Unfortunately, Stripe is not currently supported. We will add it soon!'
+                            : true,
+                      },
+                    }}
+                  />
+                  <Button type='submit' variant='contained' color='secondary'>
+                    Next Step
+                  </Button>
+                </form>
+              </FormProvider>
+            </div>
+          </Grid>
+          <Grid item xs={12} md={8}>
+            <Banner className={classes.banner} />
+          </Grid>
+        </Grid>
+      </Paper>
+    </Container>
   );
 };
 
