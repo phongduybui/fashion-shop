@@ -1,85 +1,191 @@
-import React, { useState } from 'react';
-import { Form, Button } from 'react-bootstrap';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import FormContainer from '../components/FormContainer';
+import {
+  Button,
+  Container,
+  Grid,
+  Paper,
+  Typography,
+  InputBase,
+  InputLabel,
+  FormControl,
+  FormHelperText,
+  Breadcrumbs,
+  Link,
+} from '@material-ui/core';
+import { ReactComponent as Banner } from '../assets/images/shipping.svg';
+import { Link as RouterLink } from 'react-router-dom';
+import { saveShippingAddress } from '../actions/cartActions';
+import { makeStyles, withStyles, fade } from '@material-ui/core/styles';
+import { useForm, FormProvider, Controller } from 'react-hook-form';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import CheckoutSteps from '../components/CheckoutSteps';
 import Meta from '../components/Meta';
-import { saveShippingAddress } from '../actions/cartActions';
+
+const Input = withStyles((theme) => ({
+  root: {
+    'label + &': {
+      marginTop: theme.spacing(3),
+    },
+    '&.Mui-error $input': {
+      borderColor: '#f44336',
+    },
+  },
+  input: {
+    borderRadius: 4,
+    position: 'relative',
+    backgroundColor: theme.palette.common.white,
+    border: '1px solid #ced4da',
+    fontSize: 16,
+    padding: '10px 12px',
+    transition: theme.transitions.create(['border-color', 'box-shadow']),
+    '&:focus': {
+      boxShadow: `${fade(theme.palette.primary.main, 0.25)} 0 0 0 0.2rem`,
+      borderColor: theme.palette.primary.main,
+    },
+  },
+}))(InputBase);
+
+const useStyles = makeStyles((theme) => ({
+  breadcrumbsContainer: {
+    ...theme.mixins.customize.breadcrumbs,
+  },
+  form: {
+    '& > *': {
+      marginBottom: 16,
+    },
+  },
+  content: {
+    padding: 24,
+    boxShadow: '0 10px 31px 0 rgba(0,0,0,0.05)',
+  },
+  banner: {
+    width: '100%',
+    height: '100%',
+  },
+}));
 
 const ShippingScreen = ({ history }) => {
+  const classes = useStyles();
+  const methods = useForm();
+  const { handleSubmit, control } = methods;
   const cart = useSelector((state) => state.cart);
   const { shippingAddress } = cart;
 
-  const [address, setAddress] = useState(shippingAddress.address);
-  const [city, setCity] = useState(shippingAddress.city);
-  const [postalCode, setPostalCode] = useState(shippingAddress.postalCode);
-  const [country, setCountry] = useState(shippingAddress.country);
-
   const dispatch = useDispatch();
 
-  const submitHandler = (e) => {
-    e.preventDefault();
+  const onSubmit = ({ address, city, postalCode, country }) => {
     dispatch(saveShippingAddress({ address, city, postalCode, country }));
     history.push('/payment');
   };
 
   return (
-    <>
-      <Meta title='Shipping | CyberShop' />
-      <FormContainer>
-        <CheckoutSteps step1 step2 />
-        <h1>Shipping</h1>
-        <Form onSubmit={submitHandler}>
-          <Form.Group controlId='address'>
-            <Form.Label>Address</Form.Label>
-            <Form.Control
-              type='text'
-              placeholder='Enter address'
-              value={address}
-              required
-              onChange={(e) => setAddress(e.target.value)}
-            ></Form.Control>
-          </Form.Group>
-
-          <Form.Group controlId='city'>
-            <Form.Label>City</Form.Label>
-            <Form.Control
-              type='text'
-              placeholder='Enter city'
-              value={city}
-              required
-              onChange={(e) => setCity(e.target.value)}
-            ></Form.Control>
-          </Form.Group>
-
-          <Form.Group controlId='postalCode'>
-            <Form.Label>Postal Code</Form.Label>
-            <Form.Control
-              type='text'
-              placeholder='Enter postal code'
-              value={postalCode}
-              required
-              onChange={(e) => setPostalCode(e.target.value)}
-            ></Form.Control>
-          </Form.Group>
-
-          <Form.Group controlId='country'>
-            <Form.Label>Country</Form.Label>
-            <Form.Control
-              type='text'
-              placeholder='Enter country'
-              value={country}
-              required
-              onChange={(e) => setCountry(e.target.value)}
-            ></Form.Control>
-          </Form.Group>
-
-          <Button type='submit' variant='primary' className='my-3'>
-            Continue
-          </Button>
-        </Form>
-      </FormContainer>
-    </>
+    <Container maxWidth='xl' style={{ marginBottom: 48 }}>
+      <Meta title='Shipping | FashionShop' />
+      <Grid container className={classes.breadcrumbsContainer}>
+        <Grid item xs={12}>
+          <Breadcrumbs
+            separator={<NavigateNextIcon fontSize='small' />}
+            style={{ marginBottom: 24 }}
+          >
+            <Link color='inherit' component={RouterLink} to='/'>
+              Home
+            </Link>
+            <Link color='textPrimary' component={RouterLink} to='/shipping'>
+              Shipping
+            </Link>
+          </Breadcrumbs>
+          <CheckoutSteps step={1} />
+        </Grid>
+      </Grid>
+      <Paper elevation={0} className={classes.content}>
+        <Grid container spacing={8}>
+          <Grid item xs={12} md={6}>
+            <Typography variant='h5' gutterBottom>
+              Shipping Address:
+            </Typography>
+            <FormProvider {...methods}>
+              <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
+                <Controller
+                  name='address'
+                  defaultValue={shippingAddress.address || ''}
+                  control={control}
+                  render={({ field, fieldState: { error } }) => (
+                    <FormControl fullWidth error={!!error}>
+                      <InputLabel shrink htmlFor='shipping-address'>
+                        Address
+                      </InputLabel>
+                      <Input {...field} id='shipping-address' fullWidth />{' '}
+                      {error && (
+                        <FormHelperText error>{error.message}</FormHelperText>
+                      )}
+                    </FormControl>
+                  )}
+                  rules={{ required: '(*) Address is required' }}
+                />
+                <Controller
+                  name='city'
+                  defaultValue={shippingAddress.city || ''}
+                  control={control}
+                  render={({ field, fieldState: { error } }) => (
+                    <FormControl fullWidth error={!!error}>
+                      <InputLabel shrink htmlFor='shipping-city'>
+                        City
+                      </InputLabel>
+                      <Input {...field} id='shipping-city' fullWidth />{' '}
+                      {error && (
+                        <FormHelperText error>{error.message}</FormHelperText>
+                      )}
+                    </FormControl>
+                  )}
+                  rules={{ required: '(*) City is required' }}
+                />
+                <Controller
+                  name='postalCode'
+                  defaultValue={shippingAddress.postalCode || ''}
+                  control={control}
+                  render={({ field, fieldState: { error } }) => (
+                    <FormControl fullWidth error={!!error}>
+                      <InputLabel shrink htmlFor='shipping-postalCode'>
+                        Postal Code
+                      </InputLabel>
+                      <Input {...field} id='shipping-postalCode' fullWidth />{' '}
+                      {error && (
+                        <FormHelperText error>{error.message}</FormHelperText>
+                      )}
+                    </FormControl>
+                  )}
+                  rules={{ required: '(*) Postal code is required' }}
+                />
+                <Controller
+                  name='country'
+                  defaultValue={shippingAddress.country || ''}
+                  control={control}
+                  render={({ field, fieldState: { error } }) => (
+                    <FormControl fullWidth error={!!error}>
+                      <InputLabel shrink htmlFor='shipping-country'>
+                        Country
+                      </InputLabel>
+                      <Input {...field} id='shipping-country' fullWidth />{' '}
+                      {error && (
+                        <FormHelperText error>{error.message}</FormHelperText>
+                      )}
+                    </FormControl>
+                  )}
+                  rules={{ required: '(*) Country is required' }}
+                />
+                <Button type='submit' variant='contained' color='secondary'>
+                  Next Step
+                </Button>
+              </form>
+            </FormProvider>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Banner className={classes.banner} />
+          </Grid>
+        </Grid>
+      </Paper>
+    </Container>
   );
 };
 
