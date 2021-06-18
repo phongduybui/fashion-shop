@@ -1,14 +1,114 @@
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Button, Row, Col, ListGroup, Image, Card } from 'react-bootstrap';
+import { Link as RouterLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { createOrder } from '../actions/orderActions';
+import { openSnackbar } from '../actions/snackbarActions';
+import {
+  Button,
+  Container,
+  Grid,
+  Paper,
+  Typography,
+  Breadcrumbs,
+  Link,
+  Divider,
+  ListItemText,
+  ListItem,
+  List,
+  ListItemIcon,
+  Avatar,
+  Box,
+  Hidden,
+  ListItemAvatar,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { GrLocation, GrCreditCard, GrProjects } from 'react-icons/gr';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import Message from '../components/Message';
 import CheckoutSteps from '../components/CheckoutSteps';
 import Meta from '../components/Meta';
-import { createOrder } from '../actions/orderActions';
+import paypalImage from '../assets/images/paypal.png';
+
+const useStyles = makeStyles((theme) => ({
+  breadcrumbsContainer: {
+    ...theme.mixins.customize.breadcrumbs,
+  },
+  content: {
+    padding: 24,
+    boxShadow: '0 10px 31px 0 rgba(0,0,0,0.05)',
+    [theme.breakpoints.down('sm')]: {
+      padding: 32,
+    },
+  },
+  form: {
+    marginTop: 16,
+    '& > *': {
+      marginBottom: 16,
+    },
+  },
+  banner: {
+    width: '100%',
+    height: 380,
+  },
+  orderItems: {
+    flexWrap: 'wrap',
+    paddingRight: 0,
+  },
+  items: {
+    flexBasis: '100%',
+    marginLeft: 56,
+    [theme.breakpoints.down('xs')]: {
+      marginLeft: 0,
+    },
+    '& .MuiTableCell-root': {
+      paddingLeft: 0,
+    },
+    '& .MuiTableCell-head': {
+      color: 'rgba(0, 0, 0, 0.54)',
+      fontWeight: 400,
+    },
+  },
+  largeImage: {
+    width: theme.spacing(6),
+    height: theme.spacing(8),
+  },
+  empty: {
+    ...theme.mixins.customize.centerFlex('column wrap'),
+    marginTop: 30,
+  },
+  cartTotalWrapper: {
+    marginTop: 22,
+    padding: 20,
+    fontSize: 16,
+    backgroundColor: '#F4F4F4',
+  },
+  cartTotal: {
+    fontSize: 18,
+    marginBottom: 8,
+    '&:nth-child(2)': {
+      color: theme.palette.secondary.main,
+    },
+  },
+  divider: {
+    margin: '8px 0',
+    width: 80,
+    height: 2,
+    backgroundColor: '#2a2a2a',
+  },
+  itemName: {
+    ...theme.mixins.customize.textClamp(2),
+  },
+}));
 
 const PlaceOrderScreen = ({ history }) => {
   const dispatch = useDispatch();
+  const classes = useStyles();
 
   const cart = useSelector((state) => state.cart);
 
@@ -22,8 +122,10 @@ const PlaceOrderScreen = ({ history }) => {
     return (Math.round(num * 100) / 100).toFixed(2);
   };
 
+  const address = Object.values(cart.shippingAddress).join(', ');
+
   cart.itemsPrice = addDecimals(
-    cart.cartItems.reduce((acc, item) => acc + item.price * item.qty, 0)
+    cart.cartItems.reduce((acc, item) => acc + item.priceSale * item.qty, 0)
   );
   cart.shippingPrice = addDecimals(cart.itemsPrice > 100 ? 0 : 100);
   cart.taxPrice = addDecimals(Number((0.15 * cart.itemsPrice).toFixed(2)));
@@ -39,6 +141,7 @@ const PlaceOrderScreen = ({ history }) => {
   useEffect(() => {
     if (success) {
       history.push(`/order/${order._id}`);
+      dispatch(openSnackbar('Order has been created successfully', 'success'));
     }
     // eslint-disable-next-line
   }, [history, success]);
@@ -58,113 +161,178 @@ const PlaceOrderScreen = ({ history }) => {
   };
 
   return (
-    <>
-      <Meta title='Place Order | CyberShop' />
-      <CheckoutSteps step1 step2 step3 step4 />
-      <Row>
-        <Col md={8}>
-          <ListGroup variant='flush'>
-            <ListGroup.Item className='py-3'>
-              <h2>Shipping</h2>
-              <p>
-                <strong>Address:</strong>
-                {cart.shippingAddress.address}, {cart.shippingAddress.city}{' '}
-                {cart.shippingAddress.postalCode},{' '}
-                {cart.shippingAddress.country}
-              </p>
-            </ListGroup.Item>
-
-            <ListGroup.Item className='py-3'>
-              <h2>Payment Method</h2>
-              <strong>Method: </strong>
-              {cart.paymentMethod}
-            </ListGroup.Item>
-
-            <ListGroup.Item className='py-3'>
-              <h2>Order Items</h2>
-              {cart.cartItems.length === 0 ? (
-                <Message>Your cart is empty</Message>
-              ) : (
-                <ListGroup variant='flush'>
-                  {cart.cartItems.map((item, index) => (
-                    <ListGroup.Item key={index} className='py-3'>
-                      <Row>
-                        <Col md={1}>
-                          <Image
-                            src={item.image}
-                            alt={item.name}
-                            fluid
-                            rounded
-                          />
-                        </Col>
-                        <Col>
-                          <Link to={`/product/${item.product}`}>
-                            {item.name}
-                          </Link>
-                        </Col>
-                        <Col md={4}>
-                          {item.qty} x ${item.price} = ${item.qty * item.price}
-                        </Col>
-                      </Row>
-                    </ListGroup.Item>
-                  ))}
-                </ListGroup>
-              )}
-            </ListGroup.Item>
-          </ListGroup>
-        </Col>
-        <Col md={4}>
-          <Card className='mt-3'>
-            <ListGroup variant='flush'>
-              <ListGroup.Item className='my-3'>
-                <h2>Order Summary</h2>
-              </ListGroup.Item>
-              <ListGroup.Item className='py-3'>
-                <Row>
-                  <Col>Items</Col>
-                  <Col>${cart.itemsPrice}</Col>
-                </Row>
-              </ListGroup.Item>
-              <ListGroup.Item className='py-3'>
-                <Row>
-                  <Col>Shipping</Col>
-                  <Col>${cart.shippingPrice}</Col>
-                </Row>
-              </ListGroup.Item>
-              <ListGroup.Item className='py-3'>
-                <Row>
-                  <Col>Tax</Col>
-                  <Col>${cart.taxPrice}</Col>
-                </Row>
-              </ListGroup.Item>
-              <ListGroup.Item className='py-3'>
-                <Row>
-                  <Col>Total</Col>
-                  <Col>${cart.totalPrice}</Col>
-                </Row>
-              </ListGroup.Item>
-
-              {error ? (
-                <ListGroup.Item className='py-3'>
-                  <Message variant='danger'>{error}</Message>
-                </ListGroup.Item>
-              ) : null}
-
-              <ListGroup.Item className='py-3'>
-                <Button
-                  type='button'
-                  className='btn-block'
-                  disabled={cart.cartItems === 0}
-                  onClick={placeOrderHandler}
-                >
-                  Place Order
-                </Button>
-              </ListGroup.Item>
-            </ListGroup>
-          </Card>
-        </Col>
-      </Row>
-    </>
+    <Container maxWidth='xl' style={{ marginBottom: 48 }}>
+      <Meta title='Place Order | FashionShop' />
+      <Grid container className={classes.breadcrumbsContainer}>
+        <Grid item xs={12}>
+          <Breadcrumbs
+            separator={<NavigateNextIcon fontSize='small' />}
+            style={{ marginBottom: 24 }}
+          >
+            <Link color='inherit' component={RouterLink} to='/'>
+              Home
+            </Link>
+            <Link color='textPrimary' component={RouterLink} to='/payment'>
+              Place Order
+            </Link>
+          </Breadcrumbs>
+          <CheckoutSteps step={3} />
+        </Grid>
+      </Grid>
+      <Paper elevation={0} className={classes.content}>
+        <Grid container spacing={8}>
+          <Grid item xs={12} lg={8}>
+            <List>
+              <ListItem divider>
+                <ListItemIcon>
+                  <GrLocation fontSize={22} />
+                </ListItemIcon>
+                <ListItemText primary='Shipping' secondary={address} />
+              </ListItem>
+              <ListItem divider>
+                <ListItemIcon>
+                  <GrCreditCard fontSize={22} />
+                </ListItemIcon>
+                <ListItemText
+                  primary='Payment Method'
+                  secondary={cart.paymentMethod}
+                />
+                <ListItemAvatar>
+                  <img src={paypalImage} alt='' width='80px' height='30px' />
+                </ListItemAvatar>
+              </ListItem>
+              <ListItem className={classes.orderItems}>
+                <ListItemIcon>
+                  <GrProjects fontSize={22} />
+                </ListItemIcon>
+                <ListItemText primary='Order Items' />
+                {cart.cartItems.length > 0 ? (
+                  <div className={classes.items}>
+                    <TableContainer component={Paper} elevation={0}>
+                      <Table>
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>Products</TableCell>
+                            <Hidden smDown>
+                              <TableCell align='right'>Size</TableCell>
+                              <TableCell align='right'>Price</TableCell>
+                            </Hidden>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {cart.cartItems.map((item) => (
+                            <TableRow key={item.name}>
+                              <TableCell component='th' scope='item'>
+                                <ListItem disableGutters>
+                                  <ListItemAvatar>
+                                    <Avatar
+                                      variant='square'
+                                      src={item.images && item.images[0]}
+                                      alt='product image'
+                                      className={classes.largeImage}
+                                    ></Avatar>
+                                  </ListItemAvatar>
+                                  <ListItemText
+                                    primary={item.name}
+                                    className={classes.itemName}
+                                    style={{ marginLeft: 16 }}
+                                  />
+                                </ListItem>
+                                <Hidden mdUp>
+                                  <Box
+                                    display='flex'
+                                    justifyContent='space-between'
+                                    alignItems='center'
+                                    mt={2}
+                                  >
+                                    <Box textAlign='center'>
+                                      Size: {item.sizeSelected.toUpperCase()}
+                                    </Box>
+                                    <Box textAlign='center'>
+                                      {`${item.qty} x ${item.priceSale} = ${
+                                        item.qty * item.priceSale
+                                      }`}
+                                    </Box>
+                                  </Box>
+                                </Hidden>
+                              </TableCell>
+                              <Hidden smDown>
+                                <TableCell align='right'>
+                                  {item.sizeSelected.toUpperCase()}
+                                </TableCell>
+                                <TableCell align='right'>
+                                  {`${item.qty} x $${item.priceSale} = $${
+                                    item.qty * item.priceSale
+                                  }`}
+                                </TableCell>
+                              </Hidden>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  </div>
+                ) : (
+                  <div className={classes.empty}>
+                    <Typography variant='subtitle1' color='secondary'>
+                      Your cart is empty.{' '}
+                      <Link to='/' component={RouterLink} color='primary'>
+                        Shopping now!
+                      </Link>
+                    </Typography>
+                  </div>
+                )}
+              </ListItem>
+            </List>
+          </Grid>
+          <Grid item xs={12} lg={4}>
+            <Paper elevation={0} className={classes.cartTotalWrapper}>
+              <Typography variant='h4' style={{ fontSize: 23 }}>
+                Order Summary
+              </Typography>
+              <Divider className={classes.divider} />
+              <List style={{ padding: '10px 20px 20px' }}>
+                <ListItem divider disableGutters>
+                  <ListItemText primary='Items:' />
+                  <Typography>${cart.itemsPrice}</Typography>
+                </ListItem>
+                <ListItem divider disableGutters>
+                  <ListItemText primary='Shipping:' />
+                  <Typography>${cart.shippingPrice}</Typography>
+                </ListItem>
+                <ListItem divider disableGutters>
+                  <ListItemText primary='Tax:' />
+                  <Typography>${cart.taxPrice}</Typography>
+                </ListItem>
+                <ListItem disableGutters>
+                  <ListItemText primary='Total:' />
+                  <Typography color='secondary'>${cart.totalPrice}</Typography>
+                </ListItem>
+              </List>
+              {error && <Message mb={16}>{error}</Message>}
+              <Button
+                variant='contained'
+                color='secondary'
+                fullWidth
+                disabled={cart.cartItems.length === 0}
+                onClick={placeOrderHandler}
+              >
+                Place Order
+              </Button>
+              <Button
+                variant='contained'
+                component={RouterLink}
+                to='/payment'
+                fullWidth
+                style={{ marginTop: 16 }}
+              >
+                Back
+              </Button>
+            </Paper>
+          </Grid>
+        </Grid>
+      </Paper>
+    </Container>
   );
 };
 
