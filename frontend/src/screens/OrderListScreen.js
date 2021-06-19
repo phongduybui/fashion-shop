@@ -1,19 +1,107 @@
 import React, { useEffect } from 'react';
-import { LinkContainer } from 'react-router-bootstrap';
-import { Table, Button } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import Message from '../components/Message';
-import Loader from '../components/Loader';
 import { listOrders } from '../actions/orderActions';
+import { Link as RouterLink } from 'react-router-dom';
+import {
+  Button,
+  Container,
+  Grid,
+  Paper,
+  Typography,
+  Breadcrumbs,
+  Link,
+} from '@material-ui/core';
+import { DataGrid } from '@material-ui/data-grid';
+import { makeStyles } from '@material-ui/core/styles';
+import { BiCommentDetail } from 'react-icons/bi';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+import Meta from '../components/Meta';
+import Loader from '../components/Loader';
+import Message from '../components/Message';
+
+const useStyles = makeStyles((theme) => ({
+  button: {
+    padding: '6px 0',
+    minWidth: '50px',
+    '& .MuiButton-startIcon': {
+      margin: 0,
+    },
+  },
+  breadcrumbsContainer: {
+    ...theme.mixins.customize.breadcrumbs,
+    paddingBottom: 0,
+    '& .MuiBreadcrumbs-ol': {
+      justifyContent: 'flex-start',
+    },
+  },
+  dataGrid: {
+    boxShadow: '0 10px 31px 0 rgba(0,0,0,0.05)',
+  },
+}));
 
 const OrderListScreen = ({ history }) => {
+  const classes = useStyles();
   const dispatch = useDispatch();
 
   const orderList = useSelector((state) => state.orderList);
-  const { loading, error, orders } = orderList;
+  let { loading, error, orders = [] } = orderList;
+  orders = orders.map((order) => ({ ...order, id: order._id }));
 
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
+
+  const columns = [
+    { field: '_id', headerName: 'ID', flex: 1 },
+    {
+      field: 'user',
+      headerName: 'User',
+      width: 160,
+      valueFormatter: (params) => params.row?.user?.name,
+    },
+    {
+      field: 'updatedAt',
+      headerName: 'Date',
+      width: 180,
+      valueFormatter: (params) => params.value?.substring(0, 10),
+    },
+    {
+      field: 'totalPrice',
+      headerName: 'Total',
+      width: 160,
+      type: 'number',
+    },
+    {
+      field: 'isPaid',
+      headerName: 'Paid',
+      width: 160,
+      type: 'boolean',
+    },
+    {
+      field: 'isDelivered',
+      headerName: 'Delivered',
+      width: 160,
+      type: 'boolean',
+    },
+    {
+      field: 'detail',
+      headerName: 'Detail',
+      sortable: false,
+      width: 100,
+      renderCell: (params) => {
+        const id = params.getValue(params.id, '_id') || '';
+        return (
+          <Button
+            variant='contained'
+            color='primary'
+            startIcon={<BiCommentDetail />}
+            className={classes.button}
+            component={RouterLink}
+            to={`/order/${id}`}
+          />
+        );
+      },
+    },
+  ];
 
   useEffect(() => {
     if (userInfo && userInfo.isAdmin) {
@@ -24,59 +112,57 @@ const OrderListScreen = ({ history }) => {
   }, [dispatch, history, userInfo]);
 
   return (
-    <>
-      <h1>Orders</h1>
+    <Container maxWidth='xl' style={{ marginBottom: 48 }}>
+      <Meta title='Dashboard | Orders' />
+      <Grid container className={classes.breadcrumbsContainer}>
+        <Grid item xs={12}>
+          <Breadcrumbs
+            separator={<NavigateNextIcon fontSize='small' />}
+            style={{ marginBottom: 24 }}
+          >
+            <Link color='inherit' component={RouterLink} to='/'>
+              Home
+            </Link>
+            <Link color='inherit' component={RouterLink} to='/'>
+              Admin Dashboard
+            </Link>
+            <Link color='textPrimary' component={RouterLink} to='/userlist'>
+              Orders
+            </Link>
+          </Breadcrumbs>
+          <Typography
+            variant='h5'
+            component='h1'
+            gutterBottom
+            style={{ textAlign: 'center' }}
+          >
+            Order Management
+          </Typography>
+        </Grid>
+      </Grid>
       {loading ? (
-        <Loader />
+        <Loader></Loader>
       ) : error ? (
-        <Message variant='danger'>{error}</Message>
+        <Message>{error}</Message>
       ) : (
-        <Table striped bordered hover responsive className='table-sm'>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>USER</th>
-              <th>DATE</th>
-              <th>TOTAL</th>
-              <th>PAID</th>
-              <th>DELIVERED</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {orders.map((order) => (
-              <tr key={order._id}>
-                <td>{order._id}</td>
-                <td>{order.user && order.user.name}</td>
-                <td>{order.createdAt.substring(0, 10)}</td>
-                <td>${order.totalPrice}</td>
-                <td>
-                  {order.isPaid ? (
-                    order.paidAt.substring(0, 10)
-                  ) : (
-                    <i className='fas fa-times' style={{ color: 'red' }}></i>
-                  )}
-                </td>
-                <td>
-                  {order.isDelivered ? (
-                    order.deliveredAt.substring(0, 10)
-                  ) : (
-                    <i className='fas fa-times' style={{ color: 'red' }}></i>
-                  )}
-                </td>
-                <td>
-                  <LinkContainer to={`/order/${order._id}`}>
-                    <Button variant='info' className='btn-sm'>
-                      Details
-                    </Button>
-                  </LinkContainer>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
+        <Grid container>
+          <Grid
+            item
+            xs={12}
+            component={Paper}
+            className={classes.dataGrid}
+            elevation={0}
+          >
+            <DataGrid
+              rows={orders}
+              columns={columns}
+              pageSize={10}
+              autoHeight
+            />
+          </Grid>
+        </Grid>
       )}
-    </>
+    </Container>
   );
 };
 
