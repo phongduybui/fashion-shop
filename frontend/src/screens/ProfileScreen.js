@@ -1,19 +1,120 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Form, Button, Row, Col } from 'react-bootstrap';
-import { LinkContainer } from 'react-router-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import Message from '../components/Message';
-import Loader from '../components/Loader';
+import { Link as RouterLink } from 'react-router-dom';
+import {
+  Button,
+  Container,
+  Grid,
+  Paper,
+  Typography,
+  FormControl,
+  Breadcrumbs,
+  Link,
+  Box,
+  Badge,
+  Avatar,
+  InputAdornment,
+  IconButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from '@material-ui/core';
 import { getUserDetails, updateUserProfile } from '../actions/userActions';
 import { listMyOrders } from '../actions/orderActions';
+import { openSnackbar } from '../actions/snackbarActions';
 import { USER_UPDATE_PROFILE_RESET } from '../constants/userConstants';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { useForm, FormProvider } from 'react-hook-form';
+import { VscEyeClosed, VscEye } from 'react-icons/vsc';
+import { FaTimes } from 'react-icons/fa';
+import userPlaceholder from '../assets/images/userPlaceholder.png';
+import Message from '../components/Message';
+import Loader from '../components/Loader';
+import Meta from '../components/Meta';
+import InputController from '../components/InputController';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+
+const StyledBadge = withStyles((theme) => ({
+  root: {
+    position: 'absolute',
+    top: 0,
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+  },
+  badge: {
+    backgroundColor: '#44b700',
+    color: '#44b700',
+    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+    '&::after': {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      borderRadius: '50%',
+      animation: '$ripple 1.2s infinite ease-in-out',
+      border: '1px solid currentColor',
+      content: '""',
+    },
+  },
+  '@keyframes ripple': {
+    '0%': {
+      transform: 'scale(.8)',
+      opacity: 1,
+    },
+    '100%': {
+      transform: 'scale(2.4)',
+      opacity: 0,
+    },
+  },
+}))(Badge);
+
+const useStyles = makeStyles((theme) => ({
+  breadcrumbsContainer: {
+    ...theme.mixins.customize.breadcrumbs,
+    paddingBottom: 0,
+    '& .MuiBreadcrumbs-ol': {
+      justifyContent: 'flex-start',
+    },
+  },
+  content: {
+    padding: 24,
+    boxShadow: '0 10px 31px 0 rgba(0,0,0,0.05)',
+  },
+  paper: {
+    maxHeight: 527,
+    padding: 20,
+    borderRadius: 10,
+    boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 12px',
+  },
+  largeAvatar: {
+    width: theme.spacing(10),
+    height: theme.spacing(10),
+  },
+  profile: {
+    position: 'relative',
+    ...theme.mixins.customize.flexMixin('center', 'center', 'column'),
+    backgroundColor: '#F8F9FD',
+    padding: 20,
+    marginTop: theme.spacing(4),
+    borderRadius: 10,
+  },
+  form: {
+    padding: theme.spacing(2),
+    '& .MuiInput-underline:before': {
+      borderColor: 'rgba(224, 224, 224, 1)',
+    },
+  },
+}));
 
 const ProfileScreen = ({ history }) => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [message, setMessage] = useState(null);
+  const classes = useStyles();
+  const methods = useForm();
+  const { handleSubmit, getValues } = methods;
+  const [showPassword, setShowPassword] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -37,132 +138,226 @@ const ProfileScreen = ({ history }) => {
         dispatch({ type: USER_UPDATE_PROFILE_RESET });
         dispatch(getUserDetails('profile'));
         dispatch(listMyOrders());
-      } else {
-        setName(user.name);
-        setEmail(user.email);
       }
     }
   }, [dispatch, history, userInfo, user, success]);
 
-  const submitHandler = (e) => {
-    e.preventDefault();
-    if (password !== confirmPassword) {
-      setMessage('Passwords do not match');
-    } else {
-      dispatch(updateUserProfile({ id: user._id, name, email, password }));
+  useEffect(() => {
+    if (success) {
+      dispatch(
+        openSnackbar('Profile has been updated successfully', 'success')
+      );
     }
+  }, [dispatch, success]);
+
+  const submitHandler = ({ name, email, password }) => {
+    dispatch(updateUserProfile({ id: user._id, name, email, password }));
   };
 
   return (
-    <Row>
-      <Col md={3}>
-        <h2>User Profile</h2>
-        {message && <Message variant='danger'>{message}</Message>}
-        {success && <Message variant='success'>Profile Updated</Message>}
-        {loading ? (
-          <Loader />
-        ) : error ? (
-          <Message variant='danger'>{error}</Message>
-        ) : (
-          <Form onSubmit={submitHandler}>
-            <Form.Group controlId='name'>
-              <Form.Label>Name</Form.Label>
-              <Form.Control
-                type='name'
-                placeholder='Enter name'
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
-
-            <Form.Group controlId='email'>
-              <Form.Label>Email Address</Form.Label>
-              <Form.Control
-                type='email'
-                placeholder='Enter email'
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
-
-            <Form.Group controlId='password'>
-              <Form.Label>Password</Form.Label>
-              <Form.Control
-                type='password'
-                placeholder='Enter password'
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
-
-            <Form.Group controlId='confirmPassword'>
-              <Form.Label>Confirm Password</Form.Label>
-              <Form.Control
-                type='password'
-                placeholder='Confirm password'
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
-
-            <Button type='submit' variant='primary' className='my-3'>
-              Update
-            </Button>
-          </Form>
-        )}
-      </Col>
-      <Col md={9}>
-        <h2 className='mb-3'>My Orders</h2>
-        {loadingOrders ? (
-          <Loader />
-        ) : errorOrders ? (
-          <Message variant='danger'>{errorOrders}</Message>
-        ) : (
-          <Table striped bordered hover responsive className='table-sm'>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>DATE</th>
-                <th>TOTAL</th>
-                <th>PAID</th>
-                <th>DELIVERED</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {orders.map((order) => (
-                <tr key={order._id}>
-                  <td>{order._id}</td>
-                  <td>{order.createdAt.substring(0, 10)}</td>
-                  <td>{order.totalPrice}</td>
-                  <td style={{ textAlign: 'center' }}>
-                    {order.isPaid ? (
-                      order.paidAt.substring(0, 10)
-                    ) : (
-                      <i className='fas fa-times' style={{ color: 'red' }}></i>
-                    )}
-                  </td>
-                  <td style={{ textAlign: 'center' }}>
-                    {order.isDelivered ? (
-                      order.deliveredAt.substring(0, 10)
-                    ) : (
-                      <i className='fas fa-times' style={{ color: 'red' }}></i>
-                    )}
-                  </td>
-                  <td>
-                    <LinkContainer to={`/order/${order._id}`}>
-                      <Button className='btn-sm' variant='info'>
-                        Details
-                      </Button>
-                    </LinkContainer>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        )}
-      </Col>
-    </Row>
+    <Container maxWidth='xl' style={{ marginBottom: 48 }}>
+      <Meta title='Profile' />
+      <Grid container className={classes.breadcrumbsContainer}>
+        <Grid item xs={12}>
+          <Breadcrumbs
+            separator={<NavigateNextIcon fontSize='small' />}
+            style={{ marginBottom: 24 }}
+          >
+            <Link color='inherit' component={RouterLink} to='/'>
+              Home
+            </Link>
+            <Link color='textPrimary' component={RouterLink} to='/profile'>
+              Profile
+            </Link>
+          </Breadcrumbs>
+        </Grid>
+      </Grid>
+      <Grid container spacing={4}>
+        <Grid item xs={12} lg={3}>
+          <Paper className={classes.paper} elevation={0}>
+            {loading ? (
+              <Loader />
+            ) : error ? (
+              <Message>{error}</Message>
+            ) : (
+              <>
+                <Box className={classes.profile}>
+                  <StyledBadge
+                    overlap='circle'
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'right',
+                    }}
+                    variant='dot'
+                  >
+                    <Avatar
+                      src={userPlaceholder}
+                      className={classes.largeAvatar}
+                    />
+                  </StyledBadge>
+                  <Typography style={{ marginTop: 32 }}>{user.name}</Typography>
+                  <Typography
+                    variant='caption'
+                    style={{ color: 'rgba(0, 0, 0, 0.54)' }}
+                  >
+                    {user.email}
+                  </Typography>
+                </Box>
+                <FormProvider {...methods}>
+                  <form
+                    className={classes.form}
+                    onSubmit={handleSubmit(submitHandler)}
+                  >
+                    <FormControl fullWidth style={{ marginBottom: 16 }}>
+                      <InputController
+                        name='name'
+                        label='Name'
+                        defaultValue={user.name}
+                        required
+                      />
+                    </FormControl>
+                    <FormControl fullWidth style={{ marginBottom: 16 }}>
+                      <InputController
+                        name='email'
+                        label='Email'
+                        defaultValue={user.email}
+                        required
+                        rules={{
+                          pattern: {
+                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                            message: 'Invalid email address',
+                          },
+                        }}
+                      />
+                    </FormControl>
+                    <FormControl fullWidth style={{ marginBottom: 16 }}>
+                      <InputController
+                        type={showPassword ? 'text' : 'password'}
+                        name='password'
+                        label='Password'
+                        rules={{
+                          minLength: {
+                            value: 6,
+                            message: 'Password must be more than 6 characters',
+                          },
+                        }}
+                      />
+                    </FormControl>
+                    <FormControl fullWidth style={{ marginBottom: 16 }}>
+                      <InputController
+                        type={showPassword ? 'text' : 'password'}
+                        name='confirmPassword'
+                        label='Confirm Password'
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position='end'>
+                              <IconButton
+                                onClick={() => setShowPassword(!showPassword)}
+                                onMouseDown={(e) => e.preventDefault()}
+                              >
+                                {showPassword ? <VscEye /> : <VscEyeClosed />}
+                              </IconButton>
+                            </InputAdornment>
+                          ),
+                        }}
+                        rules={{
+                          validate: {
+                            matchPassword: (value) =>
+                              value !== getValues('password')
+                                ? 'Password do not match'
+                                : true,
+                          },
+                        }}
+                      />
+                    </FormControl>
+                    <Button
+                      type='submit'
+                      variant='contained'
+                      color='secondary'
+                      fullWidth
+                      style={{ marginTop: 16 }}
+                    >
+                      Update Profile
+                    </Button>
+                  </form>
+                </FormProvider>
+              </>
+            )}
+          </Paper>
+        </Grid>
+        <Grid item xs={12} lg={9}>
+          <TableContainer
+            component={Paper}
+            className={classes.paper}
+            elevation={0}
+          >
+            <Typography variant='h5'>My Orders</Typography>
+            {loadingOrders ? (
+              <Loader />
+            ) : errorOrders ? (
+              <Message>{errorOrders}</Message>
+            ) : !orders.length ? (
+              <Message mt={8} severity='info'>
+                No order has been made yet.{' '}
+                <Link component={RouterLink} to='/'>
+                  Shop now!
+                </Link>
+              </Message>
+            ) : (
+              <Table className={classes.table}>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>ID</TableCell>
+                    <TableCell align='right'>Date</TableCell>
+                    <TableCell align='right'>Total&nbsp;($)</TableCell>
+                    <TableCell align='right'>Paid</TableCell>
+                    <TableCell align='right'>Deliverd</TableCell>
+                    <TableCell align='right'>Detail</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {orders.map((order) => (
+                    <TableRow key={order._id}>
+                      <TableCell component='th' scope='order'>
+                        {order._id}
+                      </TableCell>
+                      <TableCell align='right'>
+                        {order.createdAt.substring(0, 10)}
+                      </TableCell>
+                      <TableCell align='right'>{order.totalPrice}</TableCell>
+                      <TableCell align='right'>
+                        {order.paidAt ? (
+                          order.paidAt.substring(0, 10)
+                        ) : (
+                          <FaTimes color='red' />
+                        )}
+                      </TableCell>
+                      <TableCell align='right'>
+                        {order.deliveredAt ? (
+                          order.deliveredAt.substring(0, 10)
+                        ) : (
+                          <FaTimes color='red' />
+                        )}
+                      </TableCell>
+                      <TableCell align='right'>
+                        <Button
+                          variant='contained'
+                          size='small'
+                          component={RouterLink}
+                          to={`/order/${order._id}`}
+                        >
+                          Detail
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </TableContainer>
+        </Grid>
+      </Grid>
+    </Container>
   );
 };
 
