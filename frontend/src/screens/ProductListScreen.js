@@ -1,32 +1,61 @@
 import React, { useEffect } from 'react';
-import queryString from 'query-string';
-import { LinkContainer } from 'react-router-bootstrap';
-import { Table, Button, Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import Message from '../components/Message';
-import Loader from '../components/Loader';
-import Paginate from '../components/Paginate';
 import {
   listProducts,
   deleteProduct,
   createProduct,
 } from '../actions/productActions';
+import {
+  Button,
+  Container,
+  Grid,
+  Paper,
+  Typography,
+  Breadcrumbs,
+  Link,
+  Box,
+} from '@material-ui/core';
+import { openSnackbar } from '../actions/snackbarActions';
+import { DataGrid } from '@material-ui/data-grid';
 import { PRODUCT_CREATE_RESET } from '../constants/productConstants';
+import { Link as RouterLink } from 'react-router-dom';
+import { makeStyles } from '@material-ui/core/styles';
+import { AiOutlineDelete, AiOutlineEdit, AiOutlinePlus } from 'react-icons/ai';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+import Meta from '../components/Meta';
+import Loader from '../components/Loader';
+import Message from '../components/Message';
 
-const ProductListScreen = ({ history, location }) => {
-  const { pageNumber = 1 } = queryString.parse(location.search);
+const useStyles = makeStyles((theme) => ({
+  button: {
+    padding: '6px 0',
+    minWidth: '30px',
+    '& .MuiButton-startIcon': {
+      margin: 0,
+    },
+  },
+  breadcrumbsContainer: {
+    ...theme.mixins.customize.breadcrumbs,
+    paddingBottom: 0,
+    '& .MuiBreadcrumbs-ol': {
+      justifyContent: 'flex-start',
+    },
+  },
+  dataGrid: {
+    boxShadow: '0 10px 31px 0 rgba(0,0,0,0.05)',
+  },
+}));
 
+const ProductListScreen = ({ history }) => {
+  const classes = useStyles();
   const dispatch = useDispatch();
 
   const productList = useSelector((state) => state.productList);
-  const { loading, error, products, page, pages } = productList;
+  let { loading, error, products = [] } = productList;
+  products = products.map((product) => ({ ...product, id: product._id }));
 
   const productDelete = useSelector((state) => state.productDelete);
-  const {
-    loading: loadingDelete,
-    error: errorDelete,
-    success: successDelete,
-  } = productDelete;
+  const { error: errorDelete, success: successDelete } = productDelete;
 
   const productCreate = useSelector((state) => state.productCreate);
   const {
@@ -39,6 +68,65 @@ const ProductListScreen = ({ history, location }) => {
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
 
+  const columns = [
+    { field: '_id', headerName: 'ID', width: 220 },
+    {
+      field: 'name',
+      headerName: 'Name',
+      flex: 1,
+    },
+    {
+      field: 'price',
+      headerName: 'Price',
+      width: 120,
+    },
+    {
+      field: 'category',
+      headerName: 'Category',
+      width: 160,
+    },
+    {
+      field: 'brand',
+      headerName: 'Brand',
+      width: 120,
+    },
+    {
+      field: 'sale',
+      headerName: 'Sale',
+      width: 120,
+      valueFormatter: (params) => `${params.value} %`,
+    },
+    {
+      field: 'action',
+      headerName: 'Action',
+      sortable: false,
+      width: 100,
+      renderCell: (params) => {
+        const id = params.getValue(params.id, '_id') || '';
+        return (
+          <>
+            <Button
+              variant='contained'
+              color='primary'
+              startIcon={<AiOutlineEdit />}
+              className={classes.button}
+              component={RouterLink}
+              to={`/admin/product/${id}/edit`}
+            />
+            <Button
+              variant='contained'
+              color='secondary'
+              style={{ marginLeft: 8 }}
+              className={classes.button}
+              startIcon={<AiOutlineDelete />}
+              onClick={() => deleteHandler(id)}
+            />
+          </>
+        );
+      },
+    },
+  ];
+
   useEffect(() => {
     dispatch({ type: PRODUCT_CREATE_RESET });
 
@@ -49,7 +137,7 @@ const ProductListScreen = ({ history, location }) => {
     if (successCreate) {
       history.push(`/admin/product/${createdProduct._id}/edit`);
     } else {
-      dispatch(listProducts('', pageNumber));
+      dispatch(listProducts('', '', 'all'));
     }
   }, [
     dispatch,
@@ -58,8 +146,15 @@ const ProductListScreen = ({ history, location }) => {
     successDelete,
     successCreate,
     createdProduct,
-    pageNumber,
   ]);
+
+  useEffect(() => {
+    if (successDelete) {
+      dispatch(openSnackbar('The product has been deleted', 'success'));
+    } else if (errorDelete) {
+      dispatch(openSnackbar('Some error occur', 'error'));
+    }
+  }, [dispatch, successDelete, errorDelete]);
 
   const deleteHandler = (id) => {
     if (window.confirm('Are you sure')) {
@@ -72,68 +167,68 @@ const ProductListScreen = ({ history, location }) => {
   };
 
   return (
-    <>
-      <Row className='align-items-center justify-content-between'>
-        <Col>
-          <h1>Products</h1>
-        </Col>
-        <Col className='text-end'>
-          <Button className='my-3' onClick={createProductHandler}>
-            <i className='fas fa-plus'></i> Create Product
-          </Button>
-        </Col>
-      </Row>
-      {loadingDelete && <Loader />}
-      {errorDelete && <Message variant='danger'>{errorDelete}</Message>}
-      {loadingCreate && <Loader />}
-      {errorCreate && <Message variant='danger'>{errorCreate}</Message>}
+    <Container maxWidth='xl' style={{ marginBottom: 48 }}>
+      <Meta title='Dashboard | Products' />
+      <Grid container className={classes.breadcrumbsContainer}>
+        <Grid item xs={12}>
+          <Breadcrumbs
+            separator={<NavigateNextIcon fontSize='small' />}
+            style={{ marginBottom: 24 }}
+          >
+            <Link color='inherit' component={RouterLink} to='/'>
+              Home
+            </Link>
+            <Link color='inherit' component={RouterLink} to='/'>
+              Admin Dashboard
+            </Link>
+            <Link color='textPrimary' component={RouterLink} to='/userlist'>
+              Products
+            </Link>
+          </Breadcrumbs>
+          <div>
+            <Typography
+              variant='h5'
+              component='h1'
+              style={{ textAlign: 'center' }}
+            >
+              Product Management
+            </Typography>
+            <Box display='flex' justifyContent='flex-end' mb={2}>
+              <Button
+                variant='contained'
+                color='secondary'
+                startIcon={<AiOutlinePlus />}
+                onClick={createProductHandler}
+              >
+                Create Product
+              </Button>
+            </Box>
+          </div>
+        </Grid>
+      </Grid>
       {loading ? (
-        <Loader />
+        <Loader></Loader>
       ) : error ? (
-        <Message variant='danger'>{error}</Message>
+        <Message>{error}</Message>
       ) : (
-        <>
-          <Table striped bordered hover responsive className='table-sm'>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>NAME</th>
-                <th>PRICE</th>
-                <th>CATEGORY</th>
-                <th>BRAND</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {products.map((product) => (
-                <tr key={product._id}>
-                  <td>{product._id}</td>
-                  <td>{product.name}</td>
-                  <td>${product.price}</td>
-                  <td>{product.category}</td>
-                  <td>{product.brand}</td>
-                  <td>
-                    <LinkContainer to={`/admin/product/${product._id}/edit`}>
-                      <Button variant='light' className='btn-sm my-1'>
-                        <i className='fas fa-edit'></i>
-                      </Button>
-                    </LinkContainer>
-                    <Button
-                      variant='danger'
-                      className='btn-sm my-1'
-                      onClick={() => deleteHandler(product._id)}
-                    >
-                      <i className='fas fa-trash'></i>
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-          <Paginate pages={pages} page={page} isAdmin={true} />
-        </>
+        <Grid container>
+          <Grid
+            item
+            xs={12}
+            component={Paper}
+            className={classes.dataGrid}
+            elevation={0}
+          >
+            <DataGrid
+              rows={products}
+              columns={columns}
+              pageSize={10}
+              autoHeight
+            />
+          </Grid>
+        </Grid>
       )}
-    </>
+    </Container>
   );
 };
 
