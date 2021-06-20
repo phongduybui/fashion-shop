@@ -1,19 +1,46 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Form, Button } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
-import FormContainer from '../components/FormContainer';
+import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails, updateUser } from '../actions/userActions';
+import { openSnackbar } from '../actions/snackbarActions';
 import { USER_UPDATE_RESET } from '../constants/userConstants';
+import { Link as RouterLink } from 'react-router-dom';
+import { makeStyles } from '@material-ui/core/styles';
+import { useForm, Controller } from 'react-hook-form';
+import {
+  Typography,
+  Paper,
+  Checkbox,
+  FormControlLabel,
+  TextField,
+  Container,
+  FormControl,
+  Button,
+  Link,
+  Box,
+  Grid,
+} from '@material-ui/core';
+
+const useStyles = makeStyles((theme) => ({
+  form: {
+    paddingTop: theme.spacing(1),
+  },
+  container: {
+    marginBottom: 48,
+    marginTop: 120,
+  },
+  paper: {
+    padding: 30,
+  },
+}));
 
 const UserEditScreen = ({ match, history }) => {
   const userId = match.params.id;
 
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [isAdmin, setIsAdmin] = useState(false);
+  const classes = useStyles();
+  const methods = useForm();
+  const { handleSubmit, control, setValue } = methods;
 
   const dispatch = useDispatch();
 
@@ -35,69 +62,115 @@ const UserEditScreen = ({ match, history }) => {
       if (!user.name || user._id !== userId) {
         dispatch(getUserDetails(userId));
       } else {
-        setName(user.name);
-        setEmail(user.email);
-        setIsAdmin(user.isAdmin);
+        setValue('name', user.name, { shouldValidate: true });
+        setValue('email', user.email, { shouldValidate: true });
+        setValue('isAdmin', user.isAdmin);
       }
     }
-  }, [dispatch, history, userId, user, successUpdate]);
+  }, [dispatch, history, setValue, userId, user, successUpdate]);
 
-  const submitHandler = (e) => {
-    e.preventDefault();
+  useEffect(() => {
+    if (successUpdate) {
+      dispatch(openSnackbar('Update successful', 'success'));
+    } else if (errorUpdate) {
+      dispatch(openSnackbar(errorUpdate, 'error'));
+    }
+  }, [dispatch, successUpdate, errorUpdate]);
+
+  const submitHandler = ({ name, email, isAdmin }) => {
     dispatch(updateUser({ _id: userId, name, email, isAdmin }));
   };
 
   return (
-    <>
-      <Link to='/admin/userlist' className='btn btn-light my-3'>
-        Go Back
-      </Link>
-      <FormContainer>
-        <h1>Edit User</h1>
-        {loadingUpdate && <Loader />}
-        {errorUpdate && <Message variant='danger'>{errorUpdate}</Message>}
+    <Container maxWidth='xl' className={classes.container}>
+      <Grid container justify='center'>
         {loading ? (
           <Loader />
         ) : error ? (
-          <Message variant='danger'>{error}</Message>
+          <Message>{error}</Message>
         ) : (
-          <Form onSubmit={submitHandler}>
-            <Form.Group controlId='name' className='my-3'>
-              <Form.Label>Name</Form.Label>
-              <Form.Control
-                type='name'
-                placeholder='Enter name'
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
-
-            <Form.Group controlId='email' className='my-3'>
-              <Form.Label>Email Address</Form.Label>
-              <Form.Control
-                type='email'
-                placeholder='Enter email'
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
-
-            <Form.Group controlId='isadmin' className='my-3'>
-              <Form.Check
-                type='checkbox'
-                label='Is Admin'
-                checked={isAdmin}
-                onChange={(e) => setIsAdmin(e.target.checked)}
-              ></Form.Check>
-            </Form.Group>
-
-            <Button type='submit' variant='primary' className='my-2'>
-              Update
-            </Button>
-          </Form>
+          <Grid item xs={12} sm={6} component={Paper} className={classes.paper}>
+            <div>
+              <Typography
+                variant='h5'
+                component='h1'
+                style={{ textAlign: 'center' }}
+              >
+                Edit User
+              </Typography>
+              <Box display='flex' justifyContent='flex-start' mb={2}>
+                <Link component={RouterLink} to='/admin/userlist'>
+                  Back
+                </Link>
+              </Box>
+            </div>
+            <form
+              className={classes.form}
+              onSubmit={handleSubmit(submitHandler)}
+            >
+              <Controller
+                name='name'
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <FormControl fullWidth style={{ marginBottom: 16 }}>
+                    <TextField
+                      label='Name'
+                      defaultValue=' '
+                      {...field}
+                      error={!!error}
+                      helperText={error && error.message}
+                    />
+                  </FormControl>
+                )}
+              />
+              <Controller
+                name='email'
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <FormControl fullWidth style={{ marginBottom: 16 }}>
+                    <TextField
+                      label='Email'
+                      defaultValue=' '
+                      {...field}
+                      error={!!error}
+                      helperText={error && error.message}
+                    />
+                  </FormControl>
+                )}
+                rules={{
+                  pattern: {
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                    message: 'Invalid email address',
+                  },
+                }}
+              />
+              <FormControl fullWidth style={{ marginBottom: 16 }}>
+                <FormControlLabel
+                  control={
+                    <Controller
+                      name='isAdmin'
+                      control={control}
+                      render={({ field: { value, onChange, ...field } }) => (
+                        <Checkbox
+                          checked={!!value}
+                          onChange={onChange}
+                          {...field}
+                        />
+                      )}
+                    />
+                  }
+                  label='Is Admin'
+                />
+              </FormControl>
+              <Button type='submit' variant='contained' color='secondary'>
+                Update
+              </Button>
+              {loadingUpdate && <Loader />}
+            </form>
+          </Grid>
         )}
-      </FormContainer>
-    </>
+      </Grid>
+    </Container>
   );
 };
 
