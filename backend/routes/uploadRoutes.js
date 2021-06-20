@@ -1,41 +1,40 @@
-import path from 'path';
 import express from 'express';
-import multer from 'multer';
+import fs from 'fs';
+import upload from '../config/multer.js';
+import cloudinary from '../config/cloudinary.js';
 const router = express.Router();
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads');
-  },
-  filename(req, file, cb) {
-    cb(
-      null,
-      `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`
-    );
-  },
-});
+// Max count = 4 images
+router.post('/', upload.array('images', 4), async (req, res) => {
+  // Version 1:
+  // const imagesUrl = req.files.map((file) => `/${file.path}`);
+  // res.send(imagesUrl);
 
-function checkFileType(file, cb) {
-  const filetypes = /jpg|jpeg|png/;
-  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-  const mimetype = filetypes.test(file.mimetype);
+  // Version 2:
+  const uploader = async (path) =>
+    await cloudinary(path, 'fashionshop/products');
 
-  if (extname && mimetype) {
-    return cb(null, true);
+  if (req.method === 'POST') {
+    const urls = [];
+    const files = req.files;
+    for (const file of files) {
+      const { path } = file;
+      const newPath = await uploader(path);
+      urls.push(newPath);
+      fs.unlinkSync(path);
+    }
+
+    console.log(urls);
+
+    res.status(200).json({
+      message: 'Images uploaded successfully',
+      data: urls,
+    });
   } else {
-    cb(new Error('Images only!'));
+    res.status(405).json({
+      err: `${req.method} method not allowed`,
+    });
   }
-}
-
-const upload = multer({
-  storage: storage,
-  fileFilter: function (req, file, cb) {
-    checkFileType(file, cb);
-  },
-});
-
-router.post('/', upload.single('image'), (req, res) => {
-  res.send(`/${req.file.path}`);
 });
 
 export default router;
