@@ -1,12 +1,30 @@
+import Alert from '@material-ui/lab/Alert';
 import React from 'react';
-import { Alert } from 'react-bootstrap';
 
-const Message = ({ variant, children }) => {
-  return <Alert variant={variant}>{children}</Alert>;
+const Message = ({ severity, children, mt, mb, ml, mr, m }) => {
+  return (
+    <Alert
+      style={{
+        margin: m ? m : 0,
+        marginTop: mt,
+        marginBottom: mb,
+        marginLeft: ml,
+        marginRight: mr,
+        width: '100%',
+      }}
+      severity={severity}
+    >
+      {children}
+    </Alert>
+  );
 };
 
 Message.defaultProps = {
-  variant: 'info',
+  severity: 'error',
+  marginTop: 0,
+  marginBottom: 0,
+  marginLeft: 0,
+  marginRight: 0,
 };
 
 export default Message;
