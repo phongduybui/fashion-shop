@@ -7,24 +7,29 @@ import asyncHandler from 'express-async-handler';
  * @access  Public
  */
 const getProducts = asyncHandler(async (req, res) => {
-  const perPage = 8;
-  const page = parseInt(req.query.pageNumber) || 1;
+  if (req.query.option === 'all') {
+    const products = await Product.find({});
+    res.json({ products });
+  } else {
+    const perPage = 8;
+    const page = parseInt(req.query.pageNumber) || 1;
 
-  const keyword = req.query.keyword
-    ? {
-        name: {
-          $regex: req.query.keyword,
-          $options: 'i',
-        },
-      }
-    : {};
+    const keyword = req.query.keyword
+      ? {
+          name: {
+            $regex: req.query.keyword,
+            $options: 'i',
+          },
+        }
+      : {};
 
-  const count = await Product.countDocuments({ ...keyword });
-  const products = await Product.find({ ...keyword })
-    .limit(perPage)
-    .skip(perPage * (page - 1));
+    const count = await Product.countDocuments({ ...keyword });
+    const products = await Product.find({ ...keyword })
+      .limit(perPage)
+      .skip(perPage * (page - 1));
 
-  res.json({ products, page, pages: Math.ceil(count / perPage) });
+    res.json({ products, page, pages: Math.ceil(count / perPage) });
+  }
 });
 
 /**
@@ -62,17 +67,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
 // @route   POST /api/products
 // @access  Private/Admin
 const createProduct = asyncHandler(async (req, res) => {
-  const product = new Product({
-    name: 'Sample name',
-    price: 0,
-    user: req.user._id,
-    image: '/images/sample.jpg',
-    brand: 'Sample brand',
-    category: 'Sample category',
-    countInStock: 0,
-    numReviews: 0,
-    description: 'Sample description',
-  });
+  const product = new Product({ ...req.body, user: req.user._id });
 
   const createdProduct = await product.save();
   res.status(201).json(createdProduct);
@@ -82,19 +77,30 @@ const createProduct = asyncHandler(async (req, res) => {
 // @route   PUT /api/products/:id
 // @access  Private/Admin
 const updateProduct = asyncHandler(async (req, res) => {
-  const { name, price, description, image, brand, category, countInStock } =
-    req.body;
+  const {
+    name,
+    price,
+    sale,
+    images,
+    brand,
+    category,
+    description,
+    size,
+    countInStock,
+  } = req.body;
 
   const product = await Product.findById(req.params.id);
 
   if (product) {
-    product.name = name;
-    product.price = price;
-    product.description = description;
-    product.image = image;
-    product.brand = brand;
-    product.category = category;
-    product.countInStock = countInStock;
+    product.name = name || product.name;
+    product.price = price || product.price;
+    product.sale = sale || product.sale;
+    product.description = description || product.description;
+    product.images = images || product.images;
+    product.brand = brand || product.brand;
+    product.category = category || product.category;
+    product.size = size || product.size;
+    product.countInStock = countInStock || product.countInStock;
 
     const updatedProduct = await product.save();
     res.json(updatedProduct);
