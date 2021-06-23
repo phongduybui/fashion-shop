@@ -10,6 +10,7 @@ import {
   getLatestProducts,
   getSaleProducts,
   getRelatedProducts,
+  getSortByPriceProducts,
 } from '../controllers/productController.js';
 import { protect, checkAdmin } from '../middlewares/authMiddleware.js';
 const router = express.Router();
@@ -20,6 +21,7 @@ router.get('/top', getTopProducts);
 router.get('/latest', getLatestProducts);
 router.get('/sale', getSaleProducts);
 router.get('/related', getRelatedProducts);
+router.get('/price', getSortByPriceProducts);
 router
   .route('/:id')
   .get(getProductById)

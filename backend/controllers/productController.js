@@ -11,7 +11,7 @@ const getProducts = asyncHandler(async (req, res) => {
     const products = await Product.find({});
     res.json({ products });
   } else {
-    const perPage = 8;
+    const perPage = 12;
     const page = parseInt(req.query.pageNumber) || 1;
 
     const keyword = req.query.keyword
@@ -155,9 +155,15 @@ const createProductReview = asyncHandler(async (req, res) => {
 // @route   GET /api/products/top
 // @access  Public
 const getTopProducts = asyncHandler(async (req, res) => {
-  const products = await Product.find({}).sort({ rating: -1 }).limit(4);
+  const perPage = parseInt(req.query.perPage) || 12;
+  const page = parseInt(req.query.pageNumber) || 1;
+  const count = await Product.countDocuments({});
+  const products = await Product.find({})
+    .sort({ rating: -1 })
+    .limit(perPage)
+    .skip(perPage * (page - 1));
 
-  res.json(products);
+  res.json({ page, pages: Math.ceil(count / perPage), products });
 });
 
 /**
@@ -166,8 +172,8 @@ const getTopProducts = asyncHandler(async (req, res) => {
  * @access  Public
  */
 const getLatestProducts = asyncHandler(async (req, res) => {
-  const perPage = 8;
-  const page = req.query.pageNumber || 1;
+  const perPage = 12;
+  const page = parseInt(req.query.pageNumber) || 1;
   const count = await Product.countDocuments({});
 
   const products = await Product.find({})
@@ -184,11 +190,12 @@ const getLatestProducts = asyncHandler(async (req, res) => {
  * @access  Public
  */
 const getSaleProducts = asyncHandler(async (req, res) => {
-  const perPage = 8;
-  const page = req.query.pageNumber || 1;
-  const count = await Product.countDocuments({});
+  const perPage = 12;
+  const page = parseInt(req.query.pageNumber) || 1;
+  const count = await Product.countDocuments({ sale: { $gt: 0 } });
 
   const products = await Product.find({ sale: { $gt: 0 } })
+    .sort({ sale: 'desc' })
     .limit(perPage)
     .skip(perPage * (page - 1));
 
@@ -204,11 +211,57 @@ const getRelatedProducts = asyncHandler(async (req, res) => {
   const category = req.query.category || 'clothes';
   const perPage = 4;
   const page = req.query.pageNumber || 1;
-  const count = await Product.countDocuments({});
+  const count = await Product.countDocuments({ category });
 
   const products = await Product.find({ category })
     .limit(perPage)
     .skip(perPage * (page - 1));
+
+  res.json({ page, pages: Math.ceil(count / perPage), products });
+});
+
+/**
+ * @desc    Get products sort by price
+ * @route   GET /api/products/price
+ * @access  Public
+ */
+const getSortByPriceProducts = asyncHandler(async (req, res) => {
+  const sortBy = req.query.sortBy || 'asc';
+
+  const perPage = 12;
+  const page = parseInt(req.query.pageNumber) || 1;
+  const skipCount = perPage * (page - 1);
+  const count = await Product.countDocuments({});
+
+  const products = await Product.aggregate([
+    {
+      $project: {
+        // _id: 1,
+        price: 1,
+        sale: 1,
+        size: 1,
+        images: 1,
+        rating: 1,
+        numReviews: 1,
+        countInStock: 1,
+        name: 1,
+        brand: 1,
+        category: 1,
+        description: 1,
+        user: 1,
+        reviews: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        priceSale: {
+          $subtract: ['$price', { $multiply: ['$price', '$sale', 0.01] }],
+        },
+      },
+    },
+    { $sort: { priceSale: sortBy === 'asc' ? 1 : -1 } },
+    { $skip: skipCount },
+
+    { $limit: perPage },
+  ]);
 
   res.json({ page, pages: Math.ceil(count / perPage), products });
 });
@@ -224,4 +277,5 @@ export {
   getLatestProducts,
   getSaleProducts,
   getRelatedProducts,
+  getSortByPriceProducts,
 };
