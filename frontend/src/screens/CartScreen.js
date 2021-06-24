@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Meta from '../components/Meta';
-import { addToCart, removeFromCart } from '../actions/cartActions';
+import { removeFromCart } from '../actions/cartActions';
 import {
   Avatar,
   Box,
@@ -10,18 +10,15 @@ import {
   Button,
   Container,
   Divider,
-  FormControl,
   Grid,
   Hidden,
   IconButton,
-  InputLabel,
   Link,
+  List,
   ListItem,
   ListItemAvatar,
   ListItemText,
-  MenuItem,
   Paper,
-  Select,
   Table,
   TableBody,
   TableCell,
@@ -31,9 +28,9 @@ import {
   Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import ProductFormSelect from '../components/Product/ProductFormSelect';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import DeleteIcon from '@material-ui/icons/Delete';
-import QuantityInput from '../components/QuantityInput';
 
 const useStyles = makeStyles((theme) => ({
   breadcrumbsContainer: {
@@ -55,36 +52,30 @@ const useStyles = makeStyles((theme) => ({
       color: theme.palette.secondary.main,
     },
   },
+  formControl: {
+    marginRight: 24,
+  },
+  divider: {
+    margin: '8px 0',
+    width: 60,
+    height: 2,
+    backgroundColor: '#2a2a2a',
+  },
 }));
 
-const CartScreen = ({ history, match, location }) => {
+const CartScreen = ({ history }) => {
   const classes = useStyles();
-  const productId = match.params.id;
-  const qty = location.search ? Number(location.search.split('=')[1]) : 1;
 
   const dispatch = useDispatch();
 
   const { cartItems } = useSelector((state) => state.cart);
-  const totalPrice = cartItems.reduce(
-    (acc, item) =>
-      item.sale > 0
-        ? acc + item.qty * (item.price * (1 - item.sale / 100))
-        : acc + item.qty * item.price,
-    0
-  );
 
-  useEffect(() => {
-    if (productId) {
-      dispatch(addToCart(productId, qty));
-    }
-  }, [dispatch, qty, productId]);
+  const totalPrice = cartItems
+    .reduce((acc, item) => acc + item.qty * item.priceSale, 0)
+    .toFixed(2);
 
   const removeFromCartHandler = (id) => {
     dispatch(removeFromCart(id));
-  };
-
-  const updateCartHandler = (id, qty, size) => {
-    dispatch(addToCart(id, qty, size));
   };
 
   const checkoutHandler = () => {
@@ -117,8 +108,7 @@ const CartScreen = ({ history, match, location }) => {
                       <TableCell>Products</TableCell>
                       <Hidden smDown>
                         <TableCell align='right'>Price</TableCell>
-                        <TableCell align='right'>Size</TableCell>
-                        <TableCell align='right'>Quantity</TableCell>
+                        <TableCell align='right'>Size &amp; Quantity</TableCell>
                         <TableCell align='right'>Action</TableCell>
                       </Hidden>
                     </TableRow>
@@ -149,42 +139,9 @@ const CartScreen = ({ history, match, location }) => {
                               alignItems='center'
                               mt={2}
                             >
+                              <Box textAlign='center'>${item.priceSale}</Box>
                               <Box textAlign='center'>
-                                $
-                                {item.sale > 0
-                                  ? item.price * (1 - item.sale / 100)
-                                  : item.price}
-                              </Box>
-                              <Box textAlign='center'>
-                                <FormControl variant='outlined' size='small'>
-                                  <InputLabel shrink id='size-select-label'>
-                                    Size
-                                  </InputLabel>
-                                  <Select
-                                    labelId='size-select-label'
-                                    id='size-select'
-                                    // value={size}
-                                    // onChange={handleSizeChange}
-                                    defaultValue={item.sizeSelected}
-                                    label='Size'
-                                    autoWidth
-                                  >
-                                    {Object.keys(item.size).map((value) =>
-                                      item.size[value] > 0 ? (
-                                        <MenuItem value={value}>
-                                          {value.toUpperCase()}
-                                        </MenuItem>
-                                      ) : null
-                                    )}
-                                  </Select>
-                                </FormControl>
-                              </Box>
-                              <Box textAlign='center'>
-                                <QuantityInput
-                                  value={item.qty}
-                                  width={30}
-                                  height={30}
-                                />
+                                <ProductFormSelect item={item} />
                               </Box>
                               <Box textAlign='center'>
                                 <IconButton
@@ -200,54 +157,9 @@ const CartScreen = ({ history, match, location }) => {
                           </Hidden>
                         </TableCell>
                         <Hidden smDown>
+                          <TableCell align='right'>${item.priceSale}</TableCell>
                           <TableCell align='right'>
-                            $
-                            {item.sale > 0
-                              ? item.price * (1 - item.sale / 100)
-                              : item.price}
-                          </TableCell>
-                          <TableCell align='right'>
-                            <FormControl
-                              variant='outlined'
-                              className={classes.formControl}
-                              size='small'
-                            >
-                              <InputLabel shrink id='size-select'>
-                                Size
-                              </InputLabel>
-                              <Select
-                                labelId='size-select-label'
-                                id='size-select'
-                                // value={size}
-                                onChange={updateCartHandler}
-                                defaultValue={item.sizeSelected}
-                                label='Size'
-                                autoWidth
-                              >
-                                {Object.keys(item.size).map((value) =>
-                                  item.size[value] > 0 ? (
-                                    <MenuItem value={value}>
-                                      {value.toUpperCase()}
-                                    </MenuItem>
-                                  ) : null
-                                )}
-                              </Select>
-                            </FormControl>
-                          </TableCell>
-                          <TableCell align='right'>
-                            <QuantityInput
-                              value={item.qty}
-                              width={30}
-                              height={30}
-                              justifyContent='flex-end'
-                              // onChange={() =>
-                              //   updateCartHandler(
-                              //     item.product,
-                              //     item.sizeSelected,
-                              //     item.qty
-                              //   )
-                              // }
-                            />
+                            <ProductFormSelect item={item} />
                           </TableCell>
                           <TableCell align='right'>
                             <IconButton
@@ -280,30 +192,27 @@ const CartScreen = ({ history, match, location }) => {
         <Grid item xs={12} lg={4}>
           <Paper elevation={0} className={classes.cartTotalWrapper}>
             <Typography variant='h4' style={{ fontSize: 23 }}>
-              Cart Totals
+              Cart Total
             </Typography>
-            <Divider style={{ margin: '8px 0' }} />
-            <Grid container alignItems='center'>
-              <Grid item xs={4} className={classes.cartTotal}>
-                Total:
-              </Grid>
-              <Grid item xs={8} className={classes.cartTotal}>
-                ${totalPrice}
-              </Grid>
-            </Grid>
-            <Grid container alignItems='center'>
-              <Grid item xs={4} className={classes.cartTotal}>
-                Items:
-              </Grid>
-              <Grid item xs={8} className={classes.cartTotal}>
-                {cartItems.reduce((acc, item) => acc + item.qty, 0)}
-              </Grid>
-            </Grid>
+            <Divider className={classes.divider} />
+            <List style={{ padding: '10px 0 20px' }}>
+              <ListItem divider disableGutters>
+                <ListItemText primary='Items:' />
+                <Typography>
+                  {cartItems.reduce((acc, item) => acc + item.qty, 0)}
+                </Typography>
+              </ListItem>
+              <ListItem divider disableGutters>
+                <ListItemText primary='Total Price:' />
+                <Typography color='secondary'>${totalPrice}</Typography>
+              </ListItem>
+            </List>
             <Button
               variant='contained'
               color='secondary'
               fullWidth
               style={{ marginTop: 8 }}
+              onClick={checkoutHandler}
             >
               Proceed to Checkout
             </Button>
