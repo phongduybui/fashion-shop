@@ -88,7 +88,7 @@ const useStyles = makeStyles((theme) => ({
       'row',
       'wrap'
     ),
-    '@media (max-width: 410px)': {
+    '@media (max-width: 740px)': {
       flexWrap: 'wrap',
       '& > button': {
         backgroundColor: 'rgba(245, 0, 87, 0.05) !important',
