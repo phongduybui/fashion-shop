@@ -32,6 +32,13 @@ import {
   PRODUCT_RELATED_REQUEST,
   PRODUCT_RELATED_SUCCESS,
   PRODUCT_RELATED_FAIL,
+  PRODUCT_SORT_BY_PRICE_REQUEST,
+  PRODUCT_SORT_BY_PRICE_SUCCESS,
+  PRODUCT_SORT_BY_PRICE_FAIL,
+  PRODUCT_SHOP_REQUEST,
+  PRODUCT_SHOP_SUCCESS,
+  PRODUCT_SHOP_FAIL,
+  PRODUCT_SHOP_FILTER,
 } from '../constants/productConstants';
 
 export const productListReducer = (state = { products: [] }, action) => {
@@ -39,8 +46,8 @@ export const productListReducer = (state = { products: [] }, action) => {
     case PRODUCT_LIST_REQUEST:
       return { loading: true, products: [] };
     case PRODUCT_LIST_SUCCESS:
-      const { products, page, pages } = action.payload;
-      return { loading: false, products, page, pages };
+      const { products, page, pages, count } = action.payload;
+      return { loading: false, products, page, pages, count };
     case PRODUCT_LIST_FAIL:
       return { loading: false, error: action.payload };
     default:
@@ -127,7 +134,8 @@ export const productTopRatedReducer = (state = { products: [] }, action) => {
     case PRODUCT_TOP_REQUEST:
       return { loading: true, products: [] };
     case PRODUCT_TOP_SUCCESS:
-      return { loading: false, products: action.payload };
+      const { products, page, pages, count } = action.payload;
+      return { loading: false, products, page, pages, count };
     case PRODUCT_TOP_FAIL:
       return { loading: false, error: action.payload };
     default:
@@ -140,8 +148,8 @@ export const productLatestReducer = (state = { products: [] }, action) => {
     case PRODUCT_LATEST_REQUEST:
       return { loading: true, products: [] };
     case PRODUCT_LATEST_SUCCESS:
-      const { products, page, pages } = action.payload;
-      return { loading: false, products, page, pages };
+      const { products, page, pages, count } = action.payload;
+      return { loading: false, products, page, pages, count };
     case PRODUCT_LATEST_FAIL:
       return { loading: false, error: action.payload };
     default:
@@ -152,12 +160,12 @@ export const productLatestReducer = (state = { products: [] }, action) => {
 export const productSaleReducer = (state = { products: [] }, action) => {
   switch (action.type) {
     case PRODUCT_SALE_REQUEST:
-      return { loading: true };
+      return { loading: true, products: [] };
     case PRODUCT_SALE_SUCCESS:
-      const { page, pages, products } = action.payload;
+      const { page, pages, products, count } = action.payload;
       return { loading: false, page, pages, products };
     case PRODUCT_SALE_FAIL:
-      return { loading: false, error: action.payload };
+      return { loading: false, error: action.payload, count };
     default:
       return state;
   }
@@ -172,6 +180,51 @@ export const productRelatedReducer = (state = { products: [] }, action) => {
       return { loading: false, page, pages, products };
     case PRODUCT_RELATED_FAIL:
       return { loading: false, error: action.payload };
+    default:
+      return state;
+  }
+};
+
+export const productSortByPriceReducer = (state = { products: [] }, action) => {
+  switch (action.type) {
+    case PRODUCT_SORT_BY_PRICE_REQUEST:
+      return { ...state, loading: true };
+    case PRODUCT_SORT_BY_PRICE_SUCCESS:
+      const { page, pages, products, count } = action.payload;
+      return { loading: false, page, pages, products, count };
+    case PRODUCT_SORT_BY_PRICE_FAIL:
+      return { loading: false, error: action.payload };
+    default:
+      return state;
+  }
+};
+
+export const productShopReducer = (
+  state = { products: [], tempProducts: [], page: 1, pages: 1 },
+  action
+) => {
+  switch (action.type) {
+    case PRODUCT_SHOP_REQUEST:
+      return { ...state, loading: true };
+    case PRODUCT_SHOP_SUCCESS:
+      const { page, pages, products, count } = action.payload;
+      return {
+        loading: false,
+        page,
+        pages,
+        products,
+        tempProducts: products,
+        count,
+      };
+    case PRODUCT_SHOP_FAIL:
+      return { loading: false, error: action.payload };
+    case PRODUCT_SHOP_FILTER:
+      return action.payload
+        ? {
+            ...state,
+            products: action.payload,
+          }
+        : { ...state, products: state.tempProducts };
     default:
       return state;
   }
