@@ -28,7 +28,7 @@ const getProducts = asyncHandler(async (req, res) => {
       .limit(perPage)
       .skip(perPage * (page - 1));
 
-    res.json({ products, page, pages: Math.ceil(count / perPage) });
+    res.json({ products, page, pages: Math.ceil(count / perPage), count });
   }
 });
 
@@ -163,7 +163,7 @@ const getTopProducts = asyncHandler(async (req, res) => {
     .limit(perPage)
     .skip(perPage * (page - 1));
 
-  res.json({ page, pages: Math.ceil(count / perPage), products });
+  res.json({ page, pages: Math.ceil(count / perPage), products, count });
 });
 
 /**
@@ -181,7 +181,7 @@ const getLatestProducts = asyncHandler(async (req, res) => {
     .limit(perPage)
     .skip(perPage * (page - 1));
 
-  res.json({ page, pages: Math.ceil(count / perPage), products });
+  res.json({ page, pages: Math.ceil(count / perPage), products, count });
 });
 
 /**
@@ -199,7 +199,7 @@ const getSaleProducts = asyncHandler(async (req, res) => {
     .limit(perPage)
     .skip(perPage * (page - 1));
 
-  res.json({ page, pages: Math.ceil(count / perPage), products });
+  res.json({ page, pages: Math.ceil(count / perPage), products, count });
 });
 
 /**
@@ -263,7 +263,7 @@ const getSortByPriceProducts = asyncHandler(async (req, res) => {
     { $limit: perPage },
   ]);
 
-  res.json({ page, pages: Math.ceil(count / perPage), products });
+  res.json({ page, pages: Math.ceil(count / perPage), products, count });
 });
 
 export {
