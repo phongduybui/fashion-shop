@@ -7,20 +7,13 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
 import AddShoppingCartOutlinedIcon from '@material-ui/icons/AddShoppingCartOutlined';
-import FavoriteBorderOutlinedIcon from '@material-ui/icons/FavoriteBorderOutlined';
 import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
 import { RiShoppingBag3Fill } from 'react-icons/ri';
 import Tooltip from '@material-ui/core/Tooltip';
-import Snackbar from '@material-ui/core/Snackbar';
-import MuiAlert from '@material-ui/lab/Alert';
 import ProductModalView from './ProductModalView';
 import { Button, CardActionArea, Hidden, IconButton } from '@material-ui/core';
 import { addToCart, setOpenCartDrawer } from '../../actions/cartActions';
 import { useDispatch } from 'react-redux';
-
-function Alert(props) {
-  return <MuiAlert elevation={6} variant='filled' {...props} />;
-}
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -45,25 +38,14 @@ const useStyles = makeStyles((theme) => ({
     right: 0,
     bottom: 0,
     backgroundSize: 'cover',
+    height: '100%',
   },
   mediaFront: {
     transition: 'opacity .4s',
   },
-  wishlist: {
-    position: 'absolute',
-    top: 6,
-    right: 10,
-    zIndex: 1,
-    '& svg': {
-      color: '#999',
-    },
-    '&:hover svg': {
-      color: '#fb5d5d',
-    },
-  },
   groupAction: {
     position: 'absolute',
-    top: 102,
+    top: 65,
     right: 10,
     transform: 'translate(120%, -50%)',
     display: 'flex',
@@ -80,6 +62,10 @@ const useStyles = makeStyles((theme) => ({
     },
     '& button:hover svg': {
       color: '#fb5d5d',
+    },
+    '& .MuiIconButton-root': {
+      backgroundColor: 'rgba(255,255,255,0.5)',
+      margin: '4px 0',
     },
   },
   sale: {
@@ -123,14 +109,18 @@ const useStyles = makeStyles((theme) => ({
 
 const ProductCard = (props) => {
   const { _id, name, images, price, sale } = props;
-  const [addedWishList, setAddedWishList] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const classes = useStyles(props);
   const dispatch = useDispatch();
 
-  const handleAddToCart = (id) => {
+  const handleAddToCart = (e, id) => {
+    e.preventDefault();
     dispatch(setOpenCartDrawer(true));
-    dispatch(addToCart(id, 1));
+    dispatch(addToCart(id, 1, 'm'));
+  };
+  const handleOpenQuickView = (e) => {
+    e.preventDefault();
+    setOpenModal(true);
   };
 
   return (
@@ -139,24 +129,16 @@ const ProductCard = (props) => {
         <CardActionArea component={RouterLink} to={`/product/${_id}`}>
           <div className={classes.mediaWrapper}>
             {sale > 0 && <div className={classes.sale}>{`- ${sale}% `}</div>}
-            <Tooltip title='Add to wishlist' placement='top' arrow>
-              <IconButton
-                onClick={() => setAddedWishList(true)}
-                className={classes.wishlist}
-              >
-                <FavoriteBorderOutlinedIcon />
-              </IconButton>
-            </Tooltip>
 
             <Hidden smDown>
               <div className={classes.groupAction}>
                 <Tooltip title='Quick views' placement='right-start' arrow>
-                  <IconButton onClick={() => setOpenModal(true)}>
+                  <IconButton onClick={handleOpenQuickView}>
                     <VisibilityOutlinedIcon />
                   </IconButton>
                 </Tooltip>
                 <Tooltip title='Add to cart' placement='right' arrow>
-                  <IconButton onClick={() => handleAddToCart(_id)}>
+                  <IconButton onClick={(e) => handleAddToCart(e, _id)}>
                     <AddShoppingCartOutlinedIcon />
                   </IconButton>
                 </Tooltip>
@@ -200,15 +182,15 @@ const ProductCard = (props) => {
                     component='span'
                     className={classes.rootPrice}
                   >
-                    ${price}
+                    ${(price * 1).toFixed(2)}
                   </Typography>
                 ) : null}
-                {'  '}${sale ? price * (1 - sale / 100) : price}
+                {'  '}${(price * (1 - sale / 100)).toFixed(2)}
               </Typography>
               <Hidden mdUp>
                 <Tooltip title='Add to cart' placement='bottom' arrow>
                   <Button
-                    onClick={() => handleAddToCart(_id)}
+                    onClick={(e) => handleAddToCart(e, _id)}
                     color='secondary'
                     className={classes.cartMobile}
                     startIcon={<RiShoppingBag3Fill />}
@@ -222,16 +204,6 @@ const ProductCard = (props) => {
           </CardContent>
         </CardActionArea>
       </Card>
-      <Snackbar
-        open={addedWishList}
-        autoHideDuration={2000}
-        onClose={() => setAddedWishList(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-      >
-        <Alert onClose={() => setAddedWishList(false)} severity='success'>
-          Product has added to your wishlist.
-        </Alert>
-      </Snackbar>
       <ProductModalView
         {...props}
         openModal={openModal}
