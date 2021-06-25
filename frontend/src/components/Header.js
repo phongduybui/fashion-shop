@@ -3,7 +3,6 @@ import clsx from 'clsx';
 import logo from '../assets/images/logo.png';
 import { ReactComponent as SearchIcon } from '../assets/icons/search.svg';
 import { ReactComponent as CartIcon } from '../assets/icons/cart.svg';
-import { ReactComponent as WishlistIcon } from '../assets/icons/wishlist.svg';
 import { Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
@@ -16,10 +15,12 @@ import MenuIcon from '@material-ui/icons/Menu';
 import CloseIcon from '@material-ui/icons/Close';
 import MenuList from '@material-ui/core/MenuList';
 import HeaderUser from './HeaderUser';
+import SearchBox from './SearchBox';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { Drawer, Hidden } from '@material-ui/core';
 import { setOpenCartDrawer } from '../actions/cartActions';
 import { useDispatch, useSelector } from 'react-redux';
+import { logout } from '../actions/userActions';
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -58,11 +59,19 @@ const useStyles = makeStyles((theme) => ({
   logo: {
     flexGrow: 1,
     maxWidth: 140,
+    [theme.breakpoints.down('sm')]: {
+      maxWidth: 120,
+      marginLeft: 16,
+    },
   },
   navMenu: {
     flexBasis: '40%',
     maxWidth: '40%',
     padding: 0,
+    [theme.breakpoints.down('sm')]: {
+      flexBasis: 'unset',
+      maxWidth: 'unset',
+    },
   },
   drawer: {
     width: 250,
@@ -78,7 +87,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'space-evenly',
-    '& .navItem': {
+    '& .MuiListItem-root': {
       width: '100%',
       justifyContent: 'center',
     },
@@ -87,6 +96,11 @@ const useStyles = makeStyles((theme) => ({
     flexBasis: '40%',
     maxWidth: '40%',
     ...theme.mixins.customize.flexMixin('flex-end', 'center'),
+    [theme.breakpoints.down('sm')]: {
+      flexBasis: 'unset',
+      maxWidth: 'unset',
+      flexGrow: 1,
+    },
   },
   closeButton: {
     position: 'fixed',
@@ -100,6 +114,7 @@ const Header = (props) => {
   const { cartItems } = useSelector((state) => state.cart);
   const { userInfo } = useSelector((state) => state.userLogin);
   const [mobile, setMobile] = useState(false);
+  const [openSearchDrawer, setOpenSearchDrawer] = useState(false);
   const onMobile = useMediaQuery('(max-width:740px)');
 
   const classes = useStyles({ mobile });
@@ -108,6 +123,10 @@ const Header = (props) => {
     target: window ? window : undefined,
     threshold: 80,
   });
+
+  const handleCloseDrawer = () => {
+    setMobile(false);
+  };
 
   return (
     <AppBar
@@ -138,7 +157,7 @@ const Header = (props) => {
               </MenuItem>
               <MenuItem
                 component={Link}
-                to='/'
+                to='/shop'
                 className='navItem'
                 disableRipple
               >
@@ -159,7 +178,7 @@ const Header = (props) => {
               anchor='left'
               className={classes.drawer}
               open={mobile}
-              onClose={() => setMobile(false)}
+              onClose={handleCloseDrawer}
               ModalProps={{
                 keepMounted: true, // Better open performance on mobile
                 disablePortal: true,
@@ -171,15 +190,72 @@ const Header = (props) => {
                   to='/'
                   className='navItem'
                   style={{ marginLeft: onMobile ? 0 : -16 }}
+                  onClick={handleCloseDrawer}
                 >
                   Home
                 </MenuItem>
-                <MenuItem component={Link} to='/' className='navItem'>
+                <MenuItem
+                  component={Link}
+                  to='/shop'
+                  onClick={handleCloseDrawer}
+                >
                   Shop
                 </MenuItem>
-                <MenuItem component={Link} to='/' className='navItem'>
+                <MenuItem
+                  component={Link}
+                  to='/'
+                  divider
+                  onClick={handleCloseDrawer}
+                >
                   About Us
                 </MenuItem>
+                {userInfo ? (
+                  <div style={{ width: '100%' }}>
+                    <MenuItem
+                      component={Link}
+                      to='/profile'
+                      divider
+                      onClick={handleCloseDrawer}
+                    >
+                      {userInfo.name ? userInfo.name : 'Profile'}
+                    </MenuItem>
+                    <div style={{ width: '100%' }}>
+                      {userInfo.isAdmin && (
+                        <div style={{ width: '100%' }}>
+                          <MenuItem
+                            component={Link}
+                            to='/admin/userlist'
+                            onClick={handleCloseDrawer}
+                          >
+                            Manage Users
+                          </MenuItem>
+                          <MenuItem
+                            component={Link}
+                            to='/admin/productlist'
+                            onClick={handleCloseDrawer}
+                          >
+                            Manage Products
+                          </MenuItem>
+                          <MenuItem
+                            component={Link}
+                            to='/admin/orderlist'
+                            divider
+                            onClick={handleCloseDrawer}
+                          >
+                            Manage Orders
+                          </MenuItem>
+                        </div>
+                      )}
+                    </div>
+                    <MenuItem onClick={() => dispatch(logout())}>
+                      Logout
+                    </MenuItem>
+                  </div>
+                ) : (
+                  <MenuItem component={Link} to='/login'>
+                    Login
+                  </MenuItem>
+                )}
               </MenuList>
               <IconButton
                 edge='start'
@@ -197,18 +273,21 @@ const Header = (props) => {
           <img src={logo} alt='logo' className={classes.logo} />
         </Link>
         <div className={classes.sectionDesktop}>
-          <Hidden smDown>
-            <IconButton color='inherit'>
-              <SearchIcon height={22} width={22} />
-            </IconButton>
-          </Hidden>
-          <Hidden smDown>
-            <IconButton color='inherit'>
-              <Badge badgeContent={4} color='secondary'>
-                <WishlistIcon />
-              </Badge>
-            </IconButton>
-          </Hidden>
+          <IconButton color='inherit' onClick={() => setOpenSearchDrawer(true)}>
+            <SearchIcon height={22} width={22} />
+          </IconButton>
+
+          <Drawer
+            anchor='top'
+            open={openSearchDrawer}
+            onClose={() => setOpenSearchDrawer(false)}
+          >
+            <SearchBox
+              role='searchDrawer'
+              setOpenSearchDrawer={setOpenSearchDrawer}
+            />
+          </Drawer>
+
           <IconButton
             color='inherit'
             onClick={() => dispatch(setOpenCartDrawer(true))}
@@ -218,12 +297,6 @@ const Header = (props) => {
             </Badge>
           </IconButton>
           <Hidden smDown>
-            {/* <IconButton
-              edge='end'
-              // onClick={handleProfileMenuOpen}
-            >
-              <UserIcon height={22} />
-            </IconButton> */}
             <HeaderUser />
           </Hidden>
         </div>

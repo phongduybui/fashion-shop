@@ -85,29 +85,30 @@ export default function HeaderUser() {
                         <MenuItem component={RouterLink} to='/profile' divider>
                           {userInfo.name ? userInfo.name : 'Profile'}
                         </MenuItem>
-                        {userInfo.isAdmin && (
-                          <>
-                            <MenuItem
-                              component={RouterLink}
-                              to='/admin/userlist'
-                            >
-                              Manage Users
-                            </MenuItem>
-                            <MenuItem
-                              component={RouterLink}
-                              to='/admin/productlist'
-                            >
-                              Manage Products
-                            </MenuItem>
-                            <MenuItem
-                              component={RouterLink}
-                              to='/admin/orderlist'
-                              divider
-                            >
-                              Manage Orders
-                            </MenuItem>
-                          </>
-                        )}
+                        {userInfo.isAdmin && [
+                          <MenuItem
+                            component={RouterLink}
+                            to='/admin/userlist'
+                            key={1}
+                          >
+                            Manage Users
+                          </MenuItem>,
+                          <MenuItem
+                            component={RouterLink}
+                            to='/admin/productlist'
+                            key={2}
+                          >
+                            Manage Products
+                          </MenuItem>,
+                          <MenuItem
+                            component={RouterLink}
+                            to='/admin/orderlist'
+                            divider
+                            key={3}
+                          >
+                            Manage Orders
+                          </MenuItem>,
+                        ]}
                         <MenuItem onClick={handleLogout}>Logout</MenuItem>
                       </MenuList>
                     </ClickAwayListener>
