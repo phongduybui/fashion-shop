@@ -12,9 +12,12 @@ import {
   productLatestReducer,
   productSaleReducer,
   productRelatedReducer,
+  productSortByPriceReducer,
+  productShopReducer,
 } from './reducers/productReducers.js';
 import { cartOpenDrawerReducer, cartReducer } from './reducers/cartReducers';
 import { snackbarReducer } from './reducers/snackbarReducers';
+import { filterReducer } from './reducers/filterReducers';
 import {
   orderCreateReducer,
   orderDetailsReducer,
@@ -34,6 +37,7 @@ import {
 } from './reducers/userReducers';
 
 const reducers = combineReducers({
+  productShop: productShopReducer,
   productList: productListReducer,
   productDetails: productDetailsReducer,
   productDelete: productDeleteReducer,
@@ -44,6 +48,7 @@ const reducers = combineReducers({
   productLatest: productLatestReducer,
   productSale: productSaleReducer,
   productRelated: productRelatedReducer,
+  productSortByPrice: productSortByPriceReducer,
   cart: cartReducer,
   cartOpenDrawer: cartOpenDrawerReducer,
   userLogin: userLoginReducer,
@@ -60,6 +65,7 @@ const reducers = combineReducers({
   orderListMy: orderListMyReducer,
   orderList: orderListReducer,
   snackbarState: snackbarReducer,
+  filter: filterReducer,
 });
 
 const cartItemsFromStorage = localStorage.getItem('cartItems')
