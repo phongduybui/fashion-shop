@@ -16,6 +16,8 @@ import UserListScreen from './screens/UserListScreen';
 import UserEditScreen from './screens/UserEditScreen';
 import ProductListScreen from './screens/ProductListScreen';
 import ProductEditScreen from './screens/ProductEditScreen';
+import ProductCreateScreen from './screens/ProductCreateScreen';
+import ShopScreen from './screens/ShopScreen';
 import OrderListScreen from './screens/OrderListScreen';
 import CartPreview from './components/Drawer/CartPreview';
 import SnackbarMessage from './components/SnackbarMessage';
@@ -29,8 +31,15 @@ const App = () => {
         <Route>
           <Header />
           <main className='main'>
+            <Route path='/shop' component={ShopScreen} />
             <Route path='/admin/orderlist' component={OrderListScreen} />
-            <Route path='/admin/product/:id' component={ProductEditScreen} />
+            <Switch>
+              <Route
+                path='/admin/product/create'
+                component={ProductCreateScreen}
+              />
+              <Route path='/admin/product/:id' component={ProductEditScreen} />
+            </Switch>
             <Route path='/admin/productlist' component={ProductListScreen} />
             <Route path='/admin/user/:id' component={UserEditScreen} />
             <Route path='/admin/userlist' component={UserListScreen} />
