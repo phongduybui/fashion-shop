@@ -1,5 +1,6 @@
 import React from 'react';
-import { IconButton, Modal, Typography } from '@material-ui/core';
+import { Link as RouterLink } from 'react-router-dom';
+import { IconButton, Modal, Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Rating from '@material-ui/lab/Rating';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -84,7 +85,12 @@ const ProductModalView = (props) => {
           >
             {props.name}
           </Typography>
-          <Rating name='read-only' value={props.rating || 0} readOnly />
+          <Rating
+            name='read-only'
+            value={props.rating || 0}
+            precision={0.5}
+            readOnly
+          />
           <Typography
             variant='caption'
             component='p'
@@ -93,6 +99,14 @@ const ProductModalView = (props) => {
           >
             {props.description}
           </Typography>
+          <Button
+            variant='contained'
+            color='secondary'
+            component={RouterLink}
+            to={`/product/${props._id}`}
+          >
+            View Details
+          </Button>
         </div>
       </div>
     </Modal>

@@ -1,9 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  fetchProductDetails,
-  createProductReview,
-} from '../actions/productActions.js';
+import { fetchProductDetails } from '../actions/productActions.js';
 import { Link as RouterLink } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import { useForm, Controller } from 'react-hook-form';
@@ -17,7 +14,6 @@ import Alert from '@material-ui/lab/Alert';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import 'react-responsive-carousel/lib/styles/carousel.min.css'; // requires a loader
 import { Carousel } from 'react-responsive-carousel';
-import { PRODUCT_CREATE_REVIEW_RESET } from '../constants/productConstants.js';
 import {
   Box,
   Button,
@@ -36,7 +32,7 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
-import { FiShoppingBag, FiHeart } from 'react-icons/fi';
+import { FiShoppingBag } from 'react-icons/fi';
 import { FaTags } from 'react-icons/fa';
 import { FaShareAlt } from 'react-icons/fa';
 import ProductReview from '../components/Product/ProductReview.js';
@@ -120,9 +116,6 @@ const ProductScreen = ({ history, match }) => {
 
   const classes = useStyles(product);
 
-  const userLogin = useSelector((state) => state.userLogin);
-  const { userInfo } = userLogin;
-
   const addToCartHandler = ({ qty, size }) => {
     dispatch(addToCart(match.params.id, qty, size));
     dispatch(
@@ -194,7 +187,12 @@ const ProductScreen = ({ history, match }) => {
                   {product.name}
                 </Typography>
                 <Box display='flex' alignItems='center' mb={1}>
-                  <Rating name='read-only' value={product.rating} readOnly />
+                  <Rating
+                    name='read-only'
+                    value={product.rating}
+                    precision={0.5}
+                    readOnly
+                  />
                   <Typography component='span' style={{ marginLeft: 5 }}>
                     {`(${product.numReviews} reviews) | `}
                   </Typography>
@@ -323,7 +321,7 @@ const ProductScreen = ({ history, match }) => {
                 >
                   Add to Cart
                 </Button>
-                <Button
+                {/* <Button
                   variant='contained'
                   color='primary'
                   startIcon={<FiHeart />}
@@ -331,7 +329,7 @@ const ProductScreen = ({ history, match }) => {
                   disabled={product.countInStock === 0}
                 >
                   Add to Wishlist
-                </Button>
+                </Button> */}
                 <Divider style={{ marginTop: 30 }} />
                 <Box display='flex' alignItems='center' my={2}>
                   <Box
@@ -342,9 +340,14 @@ const ProductScreen = ({ history, match }) => {
                   >
                     <FaTags />
                   </Box>
-                  <Typography className={classes.label}>Categories:</Typography>
+                  <Typography className={classes.label}>Tags:</Typography>
                   <Box ml={2}>
-                    <Chip size='small' label={product.category} />
+                    <Chip
+                      size='small'
+                      label={product.category}
+                      style={{ marginRight: 8 }}
+                    />
+                    <Chip size='small' label={product.brand} />
                   </Box>
                 </Box>
                 <Divider />
@@ -368,7 +371,7 @@ const ProductScreen = ({ history, match }) => {
             </Grid>
             <Grid container>
               <Grid item xs={12}>
-                <ProductReview />
+                <ProductReview reviews={product.reviews} productId={match.params.id} />
               </Grid>
             </Grid>
             <Grid container>

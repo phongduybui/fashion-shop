@@ -60,7 +60,7 @@ const HomeService = () => {
             <Card className={classes.card} variant='outlined'>
               <CardContent>
                 <Icon className={classes.topIcon} />
-                <Typography variant='h6' component='h2' gutterBottom>
+                <Typography variant='h6' component='h2' gutterBottom noWrap>
                   {item.title}
                 </Typography>
                 <Typography
@@ -68,6 +68,7 @@ const HomeService = () => {
                   component='p'
                   color='textSecondary'
                   gutterBottom
+                  noWrap
                   style={{ textTransform: 'capitalize' }}
                 >
                   {item.subtitle}

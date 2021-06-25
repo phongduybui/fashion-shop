@@ -178,7 +178,7 @@ const OrderScreen = ({ match, history }) => {
     <Message>{error}</Message>
   ) : (
     <Container maxWidth='xl' style={{ marginBottom: 48 }}>
-      <Meta title='Place Order | FashionShop' />
+      <Meta title='Order | FashionShop' />
       <Grid container className={classes.breadcrumbsContainer}>
         <Grid item xs={12}>
           <Breadcrumbs
@@ -210,7 +210,7 @@ const OrderScreen = ({ match, history }) => {
                 </ListItemIcon>
                 <ListItemText
                   primary='Receiver'
-                  secondary={`${order.user.name}, email: ${order.user.name}`}
+                  secondary={`${order.user.name}, email: ${order.user.email}`}
                 />
               </ListItem>
               <ListItem divider style={{ flexWrap: 'wrap' }}>

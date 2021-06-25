@@ -1,5 +1,6 @@
 import React from 'react';
-import { Container, IconButton, Link, Typography } from '@material-ui/core';
+import { Container, IconButton, Typography } from '@material-ui/core';
+import { Link } from 'react-router-dom';
 import logo from '../assets/images/logo.png';
 import { makeStyles } from '@material-ui/core/styles';
 import { VscTwitter } from 'react-icons/vsc';

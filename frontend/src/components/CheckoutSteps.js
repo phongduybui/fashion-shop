@@ -1,7 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Stepper from '@material-ui/core/Stepper';
-import MobileStepper from '@material-ui/core/MobileStepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 
@@ -19,12 +18,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function getSteps() {
-  return [
-    'Sign In',
-    'Shipping Address',
-    'Choose Payment Method',
-    'Place Order',
-  ];
+  return ['Sign In', 'Shipping Address', 'Payment Method', 'Place Order'];
 }
 
 export default function CheckoutSteps({ step }) {

@@ -37,7 +37,7 @@ export default function SnackbarMessage() {
       TransitionComponent={SlideTransition}
       anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       open={isOpen}
-      autoHideDuration={3000}
+      autoHideDuration={3500}
       onClose={handleClose}
     >
       <div>

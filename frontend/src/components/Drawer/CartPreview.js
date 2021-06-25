@@ -13,6 +13,7 @@ import {
   SwipeableDrawer,
   Typography,
 } from '@material-ui/core';
+import { Link as RouterLink } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import ClearIcon from '@material-ui/icons/Clear';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -91,14 +92,6 @@ const CartPreview = () => {
     dispatch(setOpenCartDrawer(false));
   };
 
-  const totalPrice = cartItems
-    .reduce((acc, item) => {
-      return item.sale > 0
-        ? acc + item.price * (1 - item.sale / 100)
-        : acc + item.price;
-    }, 0)
-    .toFixed(2);
-
   return (
     <SwipeableDrawer
       anchor='right'
@@ -131,11 +124,9 @@ const CartPreview = () => {
                   </ListItemAvatar>
                   <ListItemText
                     primary={item.name}
-                    secondary={`1 x $${
-                      item.sale > 0
-                        ? item.price * (1 - item.sale / 100)
-                        : item.price
-                    }`}
+                    secondary={`${item.qty} x $${
+                      item.priceSale
+                    } | ${item.sizeSelected.toUpperCase()}`}
                     style={{ marginLeft: 10 }}
                   />
                   <ListItemSecondaryAction>
@@ -160,7 +151,10 @@ const CartPreview = () => {
                 color='secondary'
                 style={{ fontWeight: 600, fontSize: 18 }}
               >
-                ${totalPrice}
+                $
+                {cartItems
+                  .reduce((acc, item) => acc + item.priceSale * item.qty, 0)
+                  .toFixed(2)}
               </Typography>
             </div>
             <Divider variant='fullWidth' />
@@ -168,6 +162,9 @@ const CartPreview = () => {
               variant='contained'
               color='primary'
               fullWidth
+              component={RouterLink}
+              to='/cart'
+              onClick={onDrawerClose}
               className={classes.button}
             >
               View Shopping Cart
@@ -177,6 +174,9 @@ const CartPreview = () => {
               color='secondary'
               fullWidth
               className={classes.button}
+              component={RouterLink}
+              to='/shipping'
+              onClick={onDrawerClose}
             >
               Checkout
             </Button>

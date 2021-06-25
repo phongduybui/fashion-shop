@@ -1,10 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  listProducts,
-  deleteProduct,
-  createProduct,
-} from '../actions/productActions';
+import { listProducts, deleteProduct } from '../actions/productActions';
 import {
   Button,
   Container,
@@ -16,7 +12,11 @@ import {
   Box,
 } from '@material-ui/core';
 import { openSnackbar } from '../actions/snackbarActions';
-import { DataGrid } from '@material-ui/data-grid';
+import {
+  DataGrid,
+  GridToolbarContainer,
+  GridToolbarExport,
+} from '@material-ui/data-grid';
 import { PRODUCT_CREATE_RESET } from '../constants/productConstants';
 import { Link as RouterLink } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
@@ -56,14 +56,6 @@ const ProductListScreen = ({ history }) => {
 
   const productDelete = useSelector((state) => state.productDelete);
   const { error: errorDelete, success: successDelete } = productDelete;
-
-  const productCreate = useSelector((state) => state.productCreate);
-  const {
-    loading: loadingCreate,
-    error: errorCreate,
-    success: successCreate,
-    product: createdProduct,
-  } = productCreate;
 
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
@@ -134,25 +126,14 @@ const ProductListScreen = ({ history }) => {
       history.push('/login');
     }
 
-    if (successCreate) {
-      history.push(`/admin/product/${createdProduct._id}/edit`);
-    } else {
-      dispatch(listProducts('', '', 'all'));
-    }
-  }, [
-    dispatch,
-    history,
-    userInfo,
-    successDelete,
-    successCreate,
-    createdProduct,
-  ]);
+    dispatch(listProducts('', '', 'all'));
+  }, [dispatch, history, userInfo, successDelete]);
 
   useEffect(() => {
     if (successDelete) {
       dispatch(openSnackbar('The product has been deleted', 'success'));
     } else if (errorDelete) {
-      dispatch(openSnackbar('Some error occur', 'error'));
+      dispatch(openSnackbar(errorDelete, 'error'));
     }
   }, [dispatch, successDelete, errorDelete]);
 
@@ -160,10 +141,6 @@ const ProductListScreen = ({ history }) => {
     if (window.confirm('Are you sure')) {
       dispatch(deleteProduct(id));
     }
-  };
-
-  const createProductHandler = () => {
-    dispatch(createProduct());
   };
 
   return (
@@ -198,7 +175,8 @@ const ProductListScreen = ({ history }) => {
                 variant='contained'
                 color='secondary'
                 startIcon={<AiOutlinePlus />}
-                onClick={createProductHandler}
+                component={RouterLink}
+                to='/admin/product/create'
               >
                 Create Product
               </Button>
@@ -224,6 +202,13 @@ const ProductListScreen = ({ history }) => {
               columns={columns}
               pageSize={10}
               autoHeight
+              components={{
+                Toolbar: () => (
+                  <GridToolbarContainer>
+                    <GridToolbarExport />
+                  </GridToolbarContainer>
+                ),
+              }}
             />
           </Grid>
         </Grid>

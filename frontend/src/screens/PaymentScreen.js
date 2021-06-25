@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import CheckoutSteps from '../components/CheckoutSteps';
 import { savePaymentMethod } from '../actions/cartActions';
@@ -137,6 +137,14 @@ const PaymentScreen = ({ history }) => {
                   />
                   <Button type='submit' variant='contained' color='secondary'>
                     Next Step
+                  </Button>
+                  <Button
+                    variant='contained'
+                    component={RouterLink}
+                    to='/shipping'
+                    style={{ marginLeft: 8 }}
+                  >
+                    Back
                   </Button>
                 </form>
               </FormProvider>

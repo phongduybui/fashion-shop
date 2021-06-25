@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Button,
@@ -70,6 +70,7 @@ const ShippingScreen = ({ history }) => {
   const methods = useForm();
   const { handleSubmit, control } = methods;
   const cart = useSelector((state) => state.cart);
+  const { userInfo } = useSelector((state) => state.userLogin);
   const { shippingAddress } = cart;
 
   const dispatch = useDispatch();
@@ -78,6 +79,12 @@ const ShippingScreen = ({ history }) => {
     dispatch(saveShippingAddress({ address, city, postalCode, country }));
     history.push('/payment');
   };
+
+  useEffect(() => {
+    if (!userInfo) {
+      history.push(`/login?redirect=shipping`);
+    }
+  }, [userInfo, history]);
 
   return (
     <Container maxWidth='xl' style={{ marginBottom: 48 }}>

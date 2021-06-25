@@ -15,9 +15,11 @@ const InputController = ({
   type,
   name,
   label,
+  defaultValue,
   required,
   rules,
   InputProps,
+  ...props
 }) => {
   const classes = useStyles();
   const { control } = useFormContext();
@@ -26,7 +28,7 @@ const InputController = ({
     <Controller
       name={name}
       control={control}
-      defaultValue=''
+      defaultValue={defaultValue || ''}
       render={({ field: { onChange, value }, fieldState: { error } }) => (
         <TextField
           type={type}
@@ -37,9 +39,10 @@ const InputController = ({
           helperText={error ? error.message : null}
           InputProps={value ? InputProps : undefined}
           className={classes.root}
+          {...props}
         />
       )}
-      rules={{ required: required && `${label} is required`, ...rules }}
+      rules={{ required: required && `(*) ${label} is required`, ...rules }}
     />
   );
 };

@@ -21,10 +21,8 @@ const Message = ({ severity, children, mt, mb, ml, mr, m }) => {
 
 Message.defaultProps = {
   severity: 'error',
-  marginTop: 0,
-  marginBottom: 0,
-  marginLeft: 0,
-  marginRight: 0,
+  mt: 16,
+  mb: 16,
 };
 
 export default Message;

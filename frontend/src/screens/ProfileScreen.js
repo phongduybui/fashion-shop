@@ -30,7 +30,7 @@ import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { useForm, FormProvider } from 'react-hook-form';
 import { VscEyeClosed, VscEye } from 'react-icons/vsc';
 import { FaTimes } from 'react-icons/fa';
-import userPlaceholder from '../assets/images/userPlaceholder.png';
+// import userPlaceholder from '../assets/images/userPlaceholder.png';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
 import Meta from '../components/Meta';
@@ -191,7 +191,7 @@ const ProfileScreen = ({ history }) => {
                     variant='dot'
                   >
                     <Avatar
-                      src={userPlaceholder}
+                      src={`https://ui-avatars.com/api/?background=random&color=fff&name=${user.name}`}
                       className={classes.largeAvatar}
                     />
                   </StyledBadge>

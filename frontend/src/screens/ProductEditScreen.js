@@ -21,11 +21,13 @@ import {
   InputAdornment,
   InputLabel,
   IconButton,
+  MenuItem,
 } from '@material-ui/core';
 import Meta from '../components/Meta';
 import ProductCard from '../components/Product/ProductCard';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import { MdCloudUpload, MdClose } from 'react-icons/md';
+import categories from '../assets/data/categories';
 
 const useStyles = makeStyles((theme) => ({
   breadcrumbsContainer: {
@@ -213,7 +215,7 @@ const ProductEditScreen = ({ match, history }) => {
               component={RouterLink}
               to='/admin/productlist'
             >
-              Product List
+              Products
             </Link>
             <Link
               color='textPrimary'
@@ -399,6 +401,7 @@ const ProductEditScreen = ({ match, history }) => {
                 </div>
 
                 <TextField
+                  select
                   variant='outlined'
                   required
                   name='category'
@@ -406,7 +409,13 @@ const ProductEditScreen = ({ match, history }) => {
                   fullWidth
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                />
+                >
+                  {categories.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </TextField>
 
                 <TextField
                   variant='outlined'
@@ -427,7 +436,7 @@ const ProductEditScreen = ({ match, history }) => {
             </Grid>
             <Grid item xs={12} lg={3} className={classes.preview}>
               <ProductCard
-                _id={product._id}
+                _id={''}
                 name={name}
                 images={
                   previewImages.length !== 0

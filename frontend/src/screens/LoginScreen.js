@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import queryString from 'query-string';
 import { Link as RouterLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../actions/userActions';
@@ -15,14 +16,13 @@ import Box from '@material-ui/core/Box';
 import Link from '@material-ui/core/Link';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
 import Hidden from '@material-ui/core/Hidden';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 import InputController from '../components/InputController';
+import backgroundImage from '../assets/images/background.jpg';
 import { useForm, FormProvider } from 'react-hook-form';
 import { VscEyeClosed, VscEye } from 'react-icons/vsc';
 import { BiArrowBack } from 'react-icons/bi';
@@ -37,7 +37,10 @@ const useStyles = makeStyles((theme) => ({
   root: {
     ...theme.mixins.customize.centerFlex(),
     height: '100vh',
-    backgroundColor: theme.palette.background.default,
+    backgroundImage: `url(${backgroundImage})`,
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'cover',
     fontFamily: 'Poppins, sans-serif',
   },
   container: {
@@ -91,7 +94,7 @@ const LoginScreen = ({ location, history }) => {
   const userLogin = useSelector((state) => state.userLogin);
   const { loading, error, userInfo } = userLogin;
 
-  const redirect = location.search ? location.search.split('=')[1] : '/';
+  const { redirect = '/' } = queryString.parse(location.search);
 
   useEffect(() => {
     if (userInfo) {
@@ -179,7 +182,10 @@ const LoginScreen = ({ location, history }) => {
               </FormProvider>
               <Box my={4}>
                 New customer?{' '}
-                <Link component={RouterLink} to='/register'>
+                <Link
+                  component={RouterLink}
+                  to={`/register?redirect=${redirect}`}
+                >
                   Create Account
                 </Link>
               </Box>

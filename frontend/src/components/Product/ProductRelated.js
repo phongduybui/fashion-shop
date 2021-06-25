@@ -3,6 +3,8 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { listRelatedProducts } from '../../actions/productActions';
 import ProductCard from './ProductCard';
+import Loader from '../Loader';
+import Message from '../Message';
 
 const ProductRelated = ({ category }) => {
   const dispatch = useDispatch();
@@ -22,11 +24,19 @@ const ProductRelated = ({ category }) => {
         elevation={0}
       >
         <Grid container spacing={4}>
-          {products.map((product) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={product._id}>
-              <ProductCard {...product} />
-            </Grid>
-          ))}
+          {loading ? (
+            <Loader />
+          ) : error ? (
+            <Message>{error}</Message>
+          ) : (
+            <>
+              {products.map((product) => (
+                <Grid item xs={12} sm={6} md={4} lg={3} key={product._id}>
+                  <ProductCard {...product} />
+                </Grid>
+              ))}
+            </>
+          )}
         </Grid>
       </Paper>
     </>

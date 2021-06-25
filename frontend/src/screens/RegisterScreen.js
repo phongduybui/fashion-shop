@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import queryString from 'query-string';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
+import { useDispatch, useSelector } from 'react-redux';
 import { register } from '../actions/userActions';
 import { Link as RouterLink } from 'react-router-dom';
 import {
@@ -22,6 +23,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
 import Hidden from '@material-ui/core/Hidden';
 import InputController from '../components/InputController';
+import backgroundImage from '../assets/images/background.jpg';
 import { VscEyeClosed, VscEye } from 'react-icons/vsc';
 import { BiArrowBack } from 'react-icons/bi';
 
@@ -35,7 +37,10 @@ const useStyles = makeStyles((theme) => ({
   root: {
     ...theme.mixins.customize.centerFlex(),
     height: '100vh',
-    backgroundColor: theme.palette.background.default,
+    backgroundImage: `url(${backgroundImage})`,
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'cover',
     fontFamily: 'Poppins, sans-serif',
   },
   container: {
@@ -89,11 +94,11 @@ const RegisterScreen = ({ location, history }) => {
   const userRegister = useSelector((state) => state.userRegister);
   const { loading, error, userInfo } = userRegister;
 
-  const redirect = location.search ? location.search.split('=')[1] : '/';
+  const { redirect = '/login' } = queryString.parse(location.search);
 
   useEffect(() => {
     if (userInfo) {
-      history.push(redirect);
+      history.push(`/login?redirect=${redirect}`);
     }
   }, [history, userInfo, redirect]);
 
@@ -113,7 +118,7 @@ const RegisterScreen = ({ location, history }) => {
                 startIcon={<BiArrowBack />}
                 className={classes.backIcon}
               />
-              <img src={logo} alt='' width='120px' />
+              <img src={logo} alt='' className={classes.logo} />
               {loading && <Loader my={16} />}
               {error && <Message mt={8}>{error}</Message>}
               <FormProvider {...methods}>
@@ -192,7 +197,7 @@ const RegisterScreen = ({ location, history }) => {
               </FormProvider>
               <Box my={2}>
                 Have an account?{' '}
-                <Link component={RouterLink} to='/login'>
+                <Link component={RouterLink} to={`/login?redirect=${redirect}`}>
                   Login
                 </Link>
               </Box>

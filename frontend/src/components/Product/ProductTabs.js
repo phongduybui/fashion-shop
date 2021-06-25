@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import {
   listProducts,
   listLatestProducts,
@@ -165,7 +166,12 @@ const ProductTabs = () => {
           )}
         </Grid>
         <div className={classes.buttonMore}>
-          <Button variant='contained' color='secondary'>
+          <Button
+            variant='contained'
+            color='secondary'
+            component={Link}
+            to='/shop?sort_by=latest'
+          >
             Discover More
           </Button>
         </div>
@@ -187,7 +193,12 @@ const ProductTabs = () => {
           )}
         </Grid>
         <div className={classes.buttonMore}>
-          <Button variant='contained' color='secondary'>
+          <Button
+            variant='contained'
+            color='secondary'
+            component={Link}
+            to='/shop?sort_by=sale'
+          >
             Discover More
           </Button>
         </div>
@@ -209,7 +220,12 @@ const ProductTabs = () => {
           )}
         </Grid>
         <div className={classes.buttonMore}>
-          <Button variant='contained' color='secondary'>
+          <Button
+            variant='contained'
+            color='secondary'
+            component={Link}
+            to='/shop'
+          >
             Discover More
           </Button>
         </div>
