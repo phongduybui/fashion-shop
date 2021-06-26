@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from '@material-ui/core/Link';
+import { Link as RouterLink } from 'react-router-dom';
 import 'react-responsive-carousel/lib/styles/carousel.min.css'; // requires a loader
 import { Carousel } from 'react-responsive-carousel';
 
@@ -21,7 +22,7 @@ const dataCarousel = [
   {
     image:
       'https://res.cloudinary.com/phongbuiduy/image/upload/v1623085147/fashionshop/carousel/curly_hair_girl-1_rus3zv.jpg',
-    subtitle: "SPRING/SUMMER '19",
+    subtitle: "SPRING/SUMMER '21",
     title: 'The Weekent Getaway',
     position: 'left',
   },
@@ -49,7 +50,7 @@ const HomeCarousel = () => {
             >
               <div className='banner__subtitle'>{slide.subtitle}</div>
               <h2 className='banner__title'>{slide.title}</h2>
-              <Link href='#' className='banner__link'>
+              <Link to='/shop' component={RouterLink} className='banner__link'>
                 Shop Now
               </Link>
             </div>
