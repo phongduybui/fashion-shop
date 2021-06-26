@@ -3,6 +3,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Meta from '../components/Meta';
 import { removeFromCart } from '../actions/cartActions';
+import { openSnackbar } from '../actions/snackbarActions';
 import {
   Avatar,
   Box,
@@ -76,6 +77,7 @@ const CartScreen = ({ history }) => {
 
   const removeFromCartHandler = (id) => {
     dispatch(removeFromCart(id));
+    dispatch(openSnackbar('Item has been removed from the cart', 'success'));
   };
 
   const checkoutHandler = () => {
