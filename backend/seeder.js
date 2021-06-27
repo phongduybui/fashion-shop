@@ -19,11 +19,22 @@ const importData = async () => {
 
     const createdUser = await User.insertMany(users);
 
-    const adminUser = createdUser[0]._id;
+    const adminUser = createdUser[0];
 
     const sampleProducts = products.map((product) => ({
       ...product,
-      user: adminUser,
+      user: adminUser._id,
+      reviews: [
+        {
+          name: adminUser.name,
+          rating: product.rating,
+          comment:
+            'The clothes are very beautiful and stylish, in line with current trends',
+          user: adminUser._id,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+      ],
     }));
 
     await Product.insertMany(sampleProducts);

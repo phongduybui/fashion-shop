@@ -1,10 +1,12 @@
 import bcrypt from 'bcryptjs';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const users = [
   {
-    name: 'Admin User',
+    name: 'Duy Phong',
     email: 'admin@admin.com',
-    password: bcrypt.hashSync('123456', 10),
+    password: bcrypt.hashSync(process.env.ADMIN_PASSWORD, 10),
     isAdmin: true,
   },
   {
