@@ -1,11 +1,13 @@
 const categories = [
-  'Clothes',
   'T-Shirt',
+  'Hoodies & Pullovers',
+  'Jackets & Coats',
   "Men's Shirts",
-  'Short',
-  'Trousers',
   "Women's Shirts",
-  'Skirt',
+  'Pants & Jeans',
+  'Short',
+  'Dresses',
+  'Shoes',
 ];
 
 export default categories;
