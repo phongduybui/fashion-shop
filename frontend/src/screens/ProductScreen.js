@@ -221,13 +221,11 @@ const ProductScreen = ({ history, match }) => {
                       component='span'
                       className={classes.rootPrice}
                     >
-                      ${product.price}
+                      ${Number(product.price).toFixed(2)}
                     </Typography>
                   ) : null}
                   {'  '}$
-                  {product.sale
-                    ? product.price * (1 - product.sale / 100)
-                    : product.price}
+                  {Number(product.price * (1 - product.sale / 100)).toFixed(2)}
                 </Typography>
                 <Typography
                   variant='body1'
