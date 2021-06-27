@@ -169,6 +169,7 @@ const ProductScreen = ({ history, match }) => {
                   swipeable={false}
                   showStatus={false}
                   animationHandler='fade'
+                  className='product-screen-carousel'
                 >
                   {product.images?.map((image, i) => (
                     <div className='slide-product-image' key={i}>
@@ -297,6 +298,8 @@ const ProductScreen = ({ history, match }) => {
                           select
                           label='Select quantity'
                           variant='outlined'
+                          error={!product.countInStock}
+                          helperText={!product.countInStock && 'Out of stock'}
                           {...field}
                         >
                           {Array(product.countInStock)
@@ -371,7 +374,10 @@ const ProductScreen = ({ history, match }) => {
             </Grid>
             <Grid container>
               <Grid item xs={12}>
-                <ProductReview reviews={product.reviews} productId={match.params.id} />
+                <ProductReview
+                  reviews={product.reviews}
+                  productId={match.params.id}
+                />
               </Grid>
             </Grid>
             <Grid container>

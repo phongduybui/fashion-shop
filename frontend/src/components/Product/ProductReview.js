@@ -33,6 +33,7 @@ const ProductReview = ({ reviews, productId }) => {
   const dispatch = useDispatch();
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
+  const [message, setMessage] = useState('');
 
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
@@ -44,14 +45,25 @@ const ProductReview = ({ reviews, productId }) => {
     error: errorProductReview,
   } = productReviewCreate;
 
+  const handleCommentChange = (e) => {
+    setComment(e.target.value);
+    if (comment.trim()) {
+      setMessage('');
+    }
+  };
+
   const handleSubmitReview = (e) => {
     e.preventDefault();
-    dispatch(
-      createProductReview(productId, {
-        rating,
-        comment,
-      })
-    );
+    if (comment.trim()) {
+      dispatch(
+        createProductReview(productId, {
+          rating,
+          comment,
+        })
+      );
+    } else {
+      setMessage('Please write a comment!');
+    }
   };
 
   useEffect(() => {
@@ -95,7 +107,7 @@ const ProductReview = ({ reviews, productId }) => {
                   </p>
                 </Box>
                 <Rating
-                  name='read-only'
+                  name='rating'
                   value={review.rating}
                   precision={0.5}
                   readOnly
@@ -117,6 +129,7 @@ const ProductReview = ({ reviews, productId }) => {
               <form onSubmit={handleSubmitReview} className={classes.form}>
                 <Typography variant='h5'>Write a review</Typography>
                 <Rating
+                  name='rating-value'
                   value={rating}
                   precision={0.5}
                   onChange={(event, newValue) => {
@@ -129,7 +142,9 @@ const ProductReview = ({ reviews, productId }) => {
                   multiline
                   fullWidth
                   value={comment}
-                  onChange={(e) => setComment(e.target.value)}
+                  error={!!message}
+                  helperText={message}
+                  onChange={handleCommentChange}
                 ></TextField>
                 <Button variant='contained' color='secondary' type='submit'>
                   Submit

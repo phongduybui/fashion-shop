@@ -25,7 +25,7 @@ const HomeBanner = () => {
               ></img>
               <div className='banner__content'>
                 <div className='content__wrapper'>
-                  <div className='content__subtitle'>Final Education</div>
+                  <div className='content__subtitle'>Fashion Shop</div>
                   <h2 className='content__title'>
                     Men &amp;
                     <br /> Women Clothes
@@ -53,7 +53,7 @@ const HomeBanner = () => {
               ></img>
               <div className='banner__content'>
                 <div className='content__wrapper'>
-                  <span className='content__subtitle'>Final Education</span>
+                  <span className='content__subtitle'>Fashion Shop</span>
                   <h2 className='content__title'>
                     Famous &amp;
                     <br /> Local Brands

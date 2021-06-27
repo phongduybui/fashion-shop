@@ -2,6 +2,7 @@ import React from 'react';
 import clsx from 'clsx';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../../actions/cartActions';
+import { openSnackbar } from '../../actions/snackbarActions';
 import {
   FormControl,
   InputLabel,
@@ -27,8 +28,8 @@ const ProductFormSelect = ({ item, className }) => {
   const dispatch = useDispatch();
   const { control, handleSubmit } = useForm();
   const updateCartHandler = (data, id) => {
-    console.table({ data, id });
     dispatch(addToCart(id, data.qty, data.size));
+    dispatch(openSnackbar('Item has been updated', 'success'));
   };
 
   return (

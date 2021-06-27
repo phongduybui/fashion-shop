@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/phongduybui/cybershop-ecommerce#readme",
   "dependencies": {
+    "axios": "^0.21.1",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.26.0",
     "colors": "^1.4.0",
@@ -38,6 +39,7 @@
   },
   "devDependencies": {
     "concurrently": "^6.1.0",
+    "faker": "^5.5.3",
     "nodemon": "^2.0.7"
   }
 }
