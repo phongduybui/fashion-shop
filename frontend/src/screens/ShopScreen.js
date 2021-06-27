@@ -173,7 +173,11 @@ const ShopScreen = ({ location, history }) => {
       </Grid>
       <Grid container spacing={4} style={{ backgroundColor: '#fff' }} ref={ref}>
         <Grid item xs={12} md={3}>
-          <ProductFilterBar products={products} sizeSelected={size} />
+          <ProductFilterBar
+            products={products}
+            sizeSelected={size}
+            filter={filter}
+          />
         </Grid>
         <Grid item xs={12} md={9}>
           <Box className={classes.topFilter}>

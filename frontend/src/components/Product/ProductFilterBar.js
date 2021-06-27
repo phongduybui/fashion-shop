@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import clsx from 'clsx';
 import {
   Typography,
   Button,
@@ -89,9 +90,12 @@ const useStyles = makeStyles((theme) => ({
       padding: 0,
     },
   },
+  isSelected: {
+    color: '#111 !important',
+  },
 }));
 
-const ProductFilterBar = ({ products, sizeSelected }) => {
+const ProductFilterBar = ({ products, sizeSelected, filter }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const onMobile = useMediaQuery('(max-width:740px)');
@@ -218,6 +222,9 @@ const ProductFilterBar = ({ products, sizeSelected }) => {
                 justifyContent='space-between'
                 width='100%'
                 key={category}
+                className={clsx(
+                  filter.categories.indexOf(category) >= 0 && classes.isSelected
+                )}
                 onClick={() => addCategoriesHandler(category)}
               >
                 <span>{category}</span>
@@ -284,6 +291,9 @@ const ProductFilterBar = ({ products, sizeSelected }) => {
                 disableFocusRipple
                 disableRipple
                 key={brand}
+                className={clsx(
+                  filter.brands.indexOf(brand) >= 0 && classes.isSelected
+                )}
                 onClick={() => addBrandsHandler(brand)}
               >
                 {brand}
