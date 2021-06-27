@@ -107,7 +107,7 @@ const ProductReview = ({ reviews, productId }) => {
                   </p>
                 </Box>
                 <Rating
-                  name='read-only'
+                  name='rating'
                   value={review.rating}
                   precision={0.5}
                   readOnly
@@ -129,6 +129,7 @@ const ProductReview = ({ reviews, productId }) => {
               <form onSubmit={handleSubmitReview} className={classes.form}>
                 <Typography variant='h5'>Write a review</Typography>
                 <Rating
+                  name='rating-value'
                   value={rating}
                   precision={0.5}
                   onChange={(event, newValue) => {
@@ -141,7 +142,7 @@ const ProductReview = ({ reviews, productId }) => {
                   multiline
                   fullWidth
                   value={comment}
-                  error={message}
+                  error={!!message}
                   helperText={message}
                   onChange={handleCommentChange}
                 ></TextField>
