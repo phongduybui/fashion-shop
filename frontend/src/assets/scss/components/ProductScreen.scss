@@ -20,3 +20,9 @@
     right: 0;
   }
 }
+
+.product-screen-carousel {
+  & .carousel .thumb img {
+    height: 100%;
+  }
+}
