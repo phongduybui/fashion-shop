@@ -156,6 +156,9 @@ const ProductCreateScreen = ({ history }) => {
         setUploading(false);
       }
 
+      const countInStock = parseInt(sizeS) + parseInt(sizeM)
+        + parseInt(sizeL) + parseInt(sizeXl);
+
       const product = {
         name,
         price,
@@ -165,7 +168,7 @@ const ProductCreateScreen = ({ history }) => {
         category,
         description,
         size: { s: sizeS, m: sizeM, l: sizeL, xl: sizeXl },
-        countInStock: sizeS + sizeM + sizeL + sizeXl,
+        countInStock,
       };
       dispatch(createProduct(product));
     }

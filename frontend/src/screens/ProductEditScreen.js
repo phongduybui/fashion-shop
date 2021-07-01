@@ -180,6 +180,9 @@ const ProductEditScreen = ({ match, history }) => {
       }
     }
 
+    const countInStock = parseInt(sizeS) + parseInt(sizeM)
+    + parseInt(sizeL) + parseInt(sizeXl);
+
     const product = {
       _id: productId,
       name,
@@ -190,7 +193,7 @@ const ProductEditScreen = ({ match, history }) => {
       category,
       description,
       size: { s: sizeS, m: sizeM, l: sizeL, xl: sizeXl },
-      countInStock: sizeS + sizeM + sizeL + sizeXl,
+      countInStock
     };
     dispatch(updateProduct(product));
   };
