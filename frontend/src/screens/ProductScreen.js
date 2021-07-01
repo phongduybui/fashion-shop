@@ -131,6 +131,14 @@ const ProductScreen = ({ history, match }) => {
     dispatch(fetchProductDetails(match.params.id));
   }, [dispatch, match.params.id]);
 
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'smooth',
+    })
+  }, [match.params.id]);
+
   return (
     <>
       <Container maxWidth='xl' className={classes.wrapper}>
