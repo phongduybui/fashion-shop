@@ -131,6 +131,14 @@ const ProductScreen = ({ history, match }) => {
     dispatch(fetchProductDetails(match.params.id));
   }, [dispatch, match.params.id]);
 
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'smooth',
+    })
+  }, [match.params.id]);
+
   return (
     <>
       <Container maxWidth='xl' className={classes.wrapper}>
@@ -221,13 +229,11 @@ const ProductScreen = ({ history, match }) => {
                       component='span'
                       className={classes.rootPrice}
                     >
-                      ${product.price}
+                      ${Number(product.price).toFixed(2)}
                     </Typography>
                   ) : null}
                   {'  '}$
-                  {product.sale
-                    ? product.price * (1 - product.sale / 100)
-                    : product.price}
+                  {Number(product.price * (1 - product.sale / 100)).toFixed(2)}
                 </Typography>
                 <Typography
                   variant='body1'

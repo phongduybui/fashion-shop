@@ -6,7 +6,7 @@ import ProductCard from './ProductCard';
 import Loader from '../Loader';
 import Message from '../Message';
 
-const ProductRelated = ({ category }) => {
+const ProductRelated = ({ category = '' }) => {
   const dispatch = useDispatch();
   const productRelated = useSelector((state) => state.productRelated);
   const { loading, error, products = [] } = productRelated;
