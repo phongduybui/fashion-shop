@@ -119,8 +119,6 @@ const LoginScreen = ({ location, history }) => {
                 className={classes.backIcon}
               />
               <img src={logo} alt='' className={classes.logo} />
-              {loading && <Loader />}
-              {error && <Message mt={24}>{error}</Message>}
               <FormProvider {...methods}>
                 <form
                   className={classes.form}
@@ -189,6 +187,8 @@ const LoginScreen = ({ location, history }) => {
                   Create Account
                 </Link>
               </Box>
+              {loading && <Loader my={0} />}
+              {error && <Message mt={0}>{error}</Message>}
             </Box>
           </Grid>
           <Hidden smDown>

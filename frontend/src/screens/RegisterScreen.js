@@ -12,6 +12,7 @@ import {
 } from '@material-ui/core/styles';
 import { useForm, FormProvider } from 'react-hook-form';
 import { ReactComponent as LoginImage } from '../assets/images/login-illu.svg';
+import { USER_REGISTER_RESET } from '../constants/userConstants';
 import logo from '../assets/images/logo.png';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
@@ -99,8 +100,9 @@ const RegisterScreen = ({ location, history }) => {
   useEffect(() => {
     if (userInfo) {
       history.push(`/login?redirect=${redirect}`);
+      dispatch({ type: USER_REGISTER_RESET });
     }
-  }, [history, userInfo, redirect]);
+  }, [dispatch, history, userInfo, redirect]);
 
   const submitHandler = ({ name, email, password }) => {
     dispatch(register(name, email, password));
@@ -119,8 +121,6 @@ const RegisterScreen = ({ location, history }) => {
                 className={classes.backIcon}
               />
               <img src={logo} alt='' className={classes.logo} />
-              {loading && <Loader my={16} />}
-              {error && <Message mt={8}>{error}</Message>}
               <FormProvider {...methods}>
                 <form
                   className={classes.form}
@@ -201,6 +201,8 @@ const RegisterScreen = ({ location, history }) => {
                   Login
                 </Link>
               </Box>
+              {loading && <Loader my={0} />}
+              {error && <Message mt={0}>{error}</Message>}
             </Box>
           </Grid>
           <Hidden smDown>
