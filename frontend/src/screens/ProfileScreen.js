@@ -85,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: '0 10px 31px 0 rgba(0,0,0,0.05)',
   },
   paper: {
-    maxHeight: 527,
+    // minHeight: 527,
     padding: 20,
     borderRadius: 10,
     boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 12px',
@@ -113,7 +113,7 @@ const useStyles = makeStyles((theme) => ({
 const ProfileScreen = ({ history }) => {
   const classes = useStyles();
   const methods = useForm();
-  const { handleSubmit, getValues } = methods;
+  const { handleSubmit, getValues, setValue } = methods;
   const [showPassword, setShowPassword] = useState(false);
 
   const dispatch = useDispatch();
@@ -138,9 +138,12 @@ const ProfileScreen = ({ history }) => {
         dispatch({ type: USER_UPDATE_PROFILE_RESET });
         dispatch(getUserDetails('profile'));
         dispatch(listMyOrders());
+      } else {
+        setValue('name', user.name);
+        setValue('email', user.email);
       }
     }
-  }, [dispatch, history, userInfo, user, success]);
+  }, [dispatch, setValue, history, userInfo, user, success]);
 
   useEffect(() => {
     if (success) {
@@ -208,7 +211,7 @@ const ProfileScreen = ({ history }) => {
                     className={classes.form}
                     onSubmit={handleSubmit(submitHandler)}
                   >
-                    <FormControl fullWidth style={{ marginBottom: 16 }}>
+                    <FormControl fullWidth style={{ marginBottom: 12 }}>
                       <InputController
                         name='name'
                         label='Name'
@@ -216,7 +219,7 @@ const ProfileScreen = ({ history }) => {
                         required
                       />
                     </FormControl>
-                    <FormControl fullWidth style={{ marginBottom: 16 }}>
+                    <FormControl fullWidth style={{ marginBottom: 12 }}>
                       <InputController
                         name='email'
                         label='Email'
@@ -230,7 +233,7 @@ const ProfileScreen = ({ history }) => {
                         }}
                       />
                     </FormControl>
-                    <FormControl fullWidth style={{ marginBottom: 16 }}>
+                    <FormControl fullWidth style={{ marginBottom: 12 }}>
                       <InputController
                         type={showPassword ? 'text' : 'password'}
                         name='password'
@@ -243,7 +246,7 @@ const ProfileScreen = ({ history }) => {
                         }}
                       />
                     </FormControl>
-                    <FormControl fullWidth style={{ marginBottom: 16 }}>
+                    <FormControl fullWidth style={{ marginBottom: 12 }}>
                       <InputController
                         type={showPassword ? 'text' : 'password'}
                         name='confirmPassword'
