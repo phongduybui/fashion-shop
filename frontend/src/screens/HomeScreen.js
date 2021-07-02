@@ -8,7 +8,7 @@ import HomeCarousel from '../components/Home/HomeCarousel';
 import Container from '@material-ui/core/Container';
 import HomeBanner from '../components/Home/HomeBanner';
 import ProductCard from '../components/Product/ProductCard';
-import { Grid, Typography, Link } from '@material-ui/core';
+import { Grid, Typography, Button } from '@material-ui/core';
 import ProductTabs from '../components/Product/ProductTabs';
 import HomeService from '../components/Home/HomeService';
 import Alert from '@material-ui/lab/Alert';
@@ -58,12 +58,17 @@ const HomeScreen = ({ location }) => {
                 style={{
                   display: 'flex',
                   flexBasis: '100%',
-                  justifyContent: 'flex-end',
+                  justifyContent: 'center',
                 }}
               >
-                <Link component={RouterLink} to='/shop?sortBy=rating'>
-                  See More...
-                </Link>
+                <Button
+                  variant='contained'
+                  color='secondary'
+                  component={RouterLink}
+                  to='/shop?sort_by=rating'
+                >
+                  Discover More
+                </Button>
               </Grid>
             </Grid>
             <HomeBanner />
