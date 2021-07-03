@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from '@material-ui/core/Link';
+import { Button } from '@material-ui/core';
 import { Link as RouterLink } from 'react-router-dom';
 import 'react-responsive-carousel/lib/styles/carousel.min.css'; // requires a loader
 import { Carousel } from 'react-responsive-carousel';
@@ -50,9 +50,16 @@ const HomeCarousel = () => {
             >
               <div className='banner__subtitle'>{slide.subtitle}</div>
               <h2 className='banner__title'>{slide.title}</h2>
-              <Link to='/shop' component={RouterLink} className='banner__link'>
+              <Button
+                to='/shop'
+                component={RouterLink}
+                size='small'
+                variant='outlined'
+                color='secondary'
+                className='banner__link'
+              >
                 Shop Now
-              </Link>
+              </Button>
             </div>
           </div>
         ))}
