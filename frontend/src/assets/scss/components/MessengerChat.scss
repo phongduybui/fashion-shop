@@ -1,0 +1,12 @@
+.fb_dialog_content {
+  & > iframe {
+    width: 50px !important;
+    height: 50px !important;
+    & .plugin.chrome {
+      & > svg {
+        width: 50px !important;
+        height: 50px !important;
+      }
+    }
+  }
+}

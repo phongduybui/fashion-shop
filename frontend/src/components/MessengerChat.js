@@ -6,17 +6,18 @@ const MessengerChat = () => {
   const trigger = useScrollTrigger({
     disableHysteresis: true,
     target: window ? window : undefined,
-    threshold: 500,
+    threshold: 350,
   });
 
   return (
-    <MessengerCustomerChat
-      pageId='100181122341499'
-      appId='1232387687186692'
-      themeColor='#F50057'
-      shouldShowDialog={trigger}
-      minimized={true}
-    />
+    trigger && (
+      <MessengerCustomerChat
+        pageId='100181122341499'
+        appId='1232387687186692'
+        themeColor='#F50057'
+        minimized={true}
+      />
+    )
   );
 };
 
