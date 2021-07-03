@@ -6,7 +6,7 @@ const MessengerChat = () => {
   const trigger = useScrollTrigger({
     disableHysteresis: true,
     target: window ? window : undefined,
-    threshold: 250,
+    threshold: 150,
   });
 
   return (
