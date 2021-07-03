@@ -107,6 +107,10 @@ const useStyles = makeStyles((theme) => ({
     '& .MuiInput-underline:before': {
       borderColor: 'rgba(224, 224, 224, 1)',
     },
+    '& .MuiInput-input': {
+      fontFamily: 'Poppins, sans-serif',
+      fontSize: 13,
+    },
   },
 }));
 
