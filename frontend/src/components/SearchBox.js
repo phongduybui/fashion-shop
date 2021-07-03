@@ -16,7 +16,9 @@ const useStyles = makeStyles((theme) => ({
     transition: 'background .3s',
     marginLeft: 0,
     marginBottom: 28,
+    marginTop: 18,
     border: '1px solid #DDDDDD',
+    borderRadius: 4,
     [theme.breakpoints.up('sm')]: {
       width: 'auto',
     },
@@ -37,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     justifyContent: 'center',
     color: '#A3A2A2',
-    zIndex: 9999,
+    zIndex: 1,
   },
   inputRoot: {
     color: 'inherit',
