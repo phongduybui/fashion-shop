@@ -165,9 +165,6 @@ const ProductFilterBar = ({ products, sizeSelected, filter }) => {
 
   return (
     <>
-      <Typography variant='h6' gutterBottom className={classes.title}>
-        Product Search
-      </Typography>
       <SearchBox />
       <Hidden smDown>
         <Divider className={classes.divider} />
