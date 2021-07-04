@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import MessengerChat from 'react-messenger-customer-chat';
 import Footer from './components/Footer';
 import Header from './components/Header';
 import HomeScreen from './screens/HomeScreen';
@@ -22,6 +21,7 @@ import ShopScreen from './screens/ShopScreen';
 import OrderListScreen from './screens/OrderListScreen';
 import CartPreview from './components/Drawer/CartPreview';
 import SnackbarMessage from './components/SnackbarMessage';
+import MessengerChat from './components/MessengerChat';
 
 const App = () => {
   return (
@@ -57,11 +57,7 @@ const App = () => {
           <Footer />
           <CartPreview />
           <SnackbarMessage />
-          <MessengerChat
-            pageId='100181122341499'
-            appId='1232387687186692'
-            themeColor='#F50057'
-          />
+          <MessengerChat />
         </Route>
       </Switch>
     </Router>
