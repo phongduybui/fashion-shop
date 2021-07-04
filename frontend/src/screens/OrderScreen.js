@@ -122,14 +122,17 @@ const OrderScreen = ({ match, history }) => {
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
 
-  if (!loading) {
+  if (!loading && order) {
     //   Calculate prices
     const addDecimals = (num) => {
       return (Math.round(num * 100) / 100).toFixed(2);
     };
 
     order.itemsPrice = addDecimals(
-      order.orderItems.reduce((acc, item) => acc + item.priceSale * item.qty, 0)
+      order?.orderItems.reduce(
+        (acc, item) => acc + item.priceSale * item.qty,
+        0
+      )
     );
   }
 
@@ -173,9 +176,9 @@ const OrderScreen = ({ match, history }) => {
   };
 
   return loading ? (
-    <Loader />
+    <Loader my={200} />
   ) : error ? (
-    <Message>{error}</Message>
+    <Message mt={100}>{error}</Message>
   ) : (
     <Container maxWidth='xl' style={{ marginBottom: 48 }}>
       <Meta title='Order | FashionShop' />

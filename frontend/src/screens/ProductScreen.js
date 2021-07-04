@@ -9,8 +9,8 @@ import { openSnackbar } from '../actions/snackbarActions';
 import Meta from '../components/Meta';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Link from '@material-ui/core/Link';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Alert from '@material-ui/lab/Alert';
+import Loader from '../components/Loader';
+import Message from '../components/Message';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import 'react-responsive-carousel/lib/styles/carousel.min.css'; // requires a loader
 import { Carousel } from 'react-responsive-carousel';
@@ -136,16 +136,16 @@ const ProductScreen = ({ history, match }) => {
       top: 0,
       left: 0,
       behavior: 'smooth',
-    })
+    });
   }, [match.params.id]);
 
   return (
     <>
       <Container maxWidth='xl' className={classes.wrapper}>
         {loading ? (
-          <CircularProgress color='secondary' />
+          <Loader my={200} />
         ) : error ? (
-          <Alert severity='error'>{error}</Alert>
+          <Message mt={100}>{error}</Message>
         ) : (
           <>
             <Meta title={product.name} />
