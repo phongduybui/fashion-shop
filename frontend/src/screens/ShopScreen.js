@@ -136,12 +136,8 @@ const ShopScreen = ({ location, history }) => {
   }, [dispatch, sort_by, pageNumber, searchTerm]);
 
   useEffect(() => {
-    window.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: 'smooth',
-    });
-  }, []);
+    ref.current.scrollIntoView({ behavior: 'smooth' });
+  }, [pageNumber]);
 
   useEffect(() => {
     dispatch(filterListShopProduct());
@@ -156,7 +152,7 @@ const ShopScreen = ({ location, history }) => {
   return (
     <Container style={{ marginBottom: 140, maxWidth: '100%' }}>
       <Meta title='Shop' />
-      <Grid container className={classes.breadcrumbsContainer}>
+      <Grid container className={classes.breadcrumbsContainer} ref={ref}>
         <Grid item xs={12}>
           <Breadcrumbs
             separator={<NavigateNextIcon fontSize='small' />}
@@ -171,7 +167,7 @@ const ShopScreen = ({ location, history }) => {
           </Breadcrumbs>
         </Grid>
       </Grid>
-      <Grid container spacing={4} style={{ backgroundColor: '#fff' }} ref={ref}>
+      <Grid container spacing={4} style={{ backgroundColor: '#fff' }}>
         <Grid item xs={12} md={3}>
           <ProductFilterBar
             products={products}
