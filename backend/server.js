@@ -35,16 +35,22 @@ app.get('/api/config/paypal', (req, res) => {
   res.send(process.env.PAYPAL_CLIENT_ID);
 });
 
+app.get('/healthcheck', (req, res) => {
+  res.send('Server is running');
+});
+
 const __dirname = path.resolve();
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '/frontend/build')));
+// Note: Uncomment when you pre-build frontend and serve/proxy request through server
 
-  app.get('*', (req, res) =>
-    res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'))
-  );
-}
+// if (process.env.NODE_ENV === 'production') {
+//   app.use(express.static(path.join(__dirname, '/frontend/build')));
+
+//   app.get('*', (req, res) =>
+//     res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'))
+//   );
+// }
 
 app.use(notFound);
 app.use(errorHandler);
