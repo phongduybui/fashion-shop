@@ -6,8 +6,11 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/core/styles';
 import theme from './themes/theme';
 import './assets/scss/style.scss';
-
 import App from './App';
+
+// TODO: move axios to separate instance. This is temporary
+import axios from 'axios';
+axios.defaults.baseURL = 'https://be-fashion-shop.onrender.com/';
 
 ReactDOM.render(
   <Provider store={store}>

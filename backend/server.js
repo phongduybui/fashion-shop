@@ -9,6 +9,7 @@ import userRoutes from './routes/userRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 import { notFound, errorHandler } from './middlewares/errorMiddleware.js';
+import cors from 'cors';
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ connectDB();
 const PORT = process.env.PORT || 5000;
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
 if (process.env.NODE_ENV === 'development') {
