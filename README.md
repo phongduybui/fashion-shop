@@ -10,7 +10,8 @@ Modern and stylish e-commerce website
 ## Demo
 
 :point_right: :point_right: Version 2.0 (Improved UI, UX, and more functions):
-https://fashion-shop-mern.herokuapp.com
+[https://fashion-shopp.vercel.app/](https://fashion-shopp.vercel.app/)  
+https://fashion-shop-phongduybui.vercel.app/
 
 
 ## Installation 
